@@ -22,12 +22,12 @@
         <g transform="translate(-9)" fill="none" fill-rule="evenodd">
           <ellipse class="head" :fill="colorHead" cx="178" cy="156" rx="144" ry="140"/>
           <g transform="translate(48 71)">
-            <ellipse class="eye-bleft" fill="#9B9B9B" transform="rotate(46 64.5 64.5)" cx="64.5" cy="64.5" rx="46.5" ry="44.5"/>
+            <ellipse class="eye-bleft" :fill="colorEar" transform="rotate(46 64.5 64.5)" cx="64.5" cy="64.5" rx="46.5" ry="44.5"/>
             <ellipse class="eye-left" :fill="colorEye" transform="rotate(26 63.5 64.5)" cx="63.5" cy="64.5" rx="42.5" ry="36.5"/>
             <ellipse class="eye-inleft" fill="#000" cx="65" cy="52" rx="7" ry="24"/>
           </g>
           <g transform="matrix(-1 0 0 1 311 71)">
-            <ellipse class="eye-bright" fill="#9B9B9B" transform="rotate(46 64.5 64.5)" cx="64.5" cy="64.5" rx="46.5" ry="44.5"/>
+            <ellipse class="eye-bright" :fill="colorEar" transform="rotate(46 64.5 64.5)" cx="64.5" cy="64.5" rx="46.5" ry="44.5"/>
             <ellipse class="eye-right" :fill="colorEye" transform="rotate(26 63.5 64.5)" cx="63.5" cy="64.5" rx="42.5" ry="36.5"/>
             <ellipse class="eye-inright" fill="#000" cx="64" cy="52" rx="7" ry="24"/>
           </g>
@@ -58,7 +58,7 @@
       </svg>
     </div>
 
-    <form action="">
+    <form @submit="cancelSend">
         <input type="text" @keyup="generateCat()" class="name" autofocus>
     </form>
 </div>
@@ -77,14 +77,19 @@
         let red = rand(0, 255)
         let green = rand(0, 255)
         let blue = rand(0, 255)
+        let hslValues = rgbToHsl(red, green, blue)
+        console.log(hslValues)
         this.colorHead = `rgb(${red},${green},${blue})`
         this.colorEar = shadeBlend(-0.2, this.colorHead)
-
-        red = rand(0, 255)
-        green = rand(0, 255)
-        blue = rand(0, 255)
-        this.colorEye = `rgb(${red},${green},${blue})`
-
+        let hue = 0
+        if ((hslValues[0] * 100) >= 50)
+          hue = ((((hslValues[0] * 100) * 360)/100) - 50)
+        else
+          hue = ((((hslValues[0] * 100) * 360)/100) + 50)
+        this.colorEye = `hsl(${hue.toFixed(0)}, ${(hslValues[1] * 100).toFixed(0)}%, 90%)`
+      },
+      cancelSend: function (e) {
+        e.preventDefault()
       }
     }
   })
@@ -104,6 +109,30 @@
       var f=w(c0.slice(1),16),t=w((c1?c1:p<0?"#000000":"#FFFFFF").slice(1),16),R1=f>>16,G1=f>>8&0x00FF,B1=f&0x0000FF;
       return "#"+(0x1000000+(u(((t>>16)-R1)*n)+R1)*0x10000+(u(((t>>8&0x00FF)-G1)*n)+G1)*0x100+(u(((t&0x0000FF)-B1)*n)+B1)).toString(16).slice(1)
     }
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255, g /= 255, b /= 255;
+
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+
+    if (max == min) {
+      h = s = 0; // achromatic
+    } else {
+      var d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+
+      h /= 6;
+    }
+
+    return [ h, s, l ];
   }
 
   let logPathSegments = (path) => {

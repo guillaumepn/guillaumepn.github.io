@@ -8,6 +8,7 @@
   <title>Catfish - Face</title>
   <link rel="stylesheet" href="style.css">
   <script src="path-data-polyfill.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/seedrandom.min.js"></script>
 </head>
 <body>
 <div id="app">
@@ -59,7 +60,7 @@
     </div>
 
     <form @submit="cancelSend">
-        <input type="text" @keyup="generateCat()" class="name" autofocus>
+        <input type="text" v-model="catname" class="name" autofocus>
     </form>
 </div>
 
@@ -70,15 +71,23 @@
     data: {
       colorHead: '#CFCBCB',
       colorEar: '#9B9B9B',
-      colorEye: '#A5C4E8'
+      colorEye: '#A5C4E8',
+      catname: ''
     },
     methods: {
-      generateCat: function () {
+      cancelSend: function (e) {
+        e.preventDefault()
+      }
+    },
+    watch: {
+      catname: function () {
+        // Crée la seed permettant d'avoir toujours le même chat pour une string donnée
+        Math.seedrandom(this.catname)
+        // Maintenant, tous les futurs nombres aléatoires seront basés sur cette seed
         let red = rand(0, 255)
         let green = rand(0, 255)
         let blue = rand(0, 255)
         let hslValues = rgbToHsl(red, green, blue)
-        console.log(hslValues)
         this.colorHead = `rgb(${red},${green},${blue})`
         this.colorEar = shadeBlend(-0.2, this.colorHead)
         let hue = 0
@@ -86,10 +95,8 @@
           hue = ((((hslValues[0] * 100) * 360)/100) - 50)
         else
           hue = ((((hslValues[0] * 100) * 360)/100) + 50)
-        this.colorEye = `hsl(${hue.toFixed(0)}, ${(hslValues[1] * 100).toFixed(0)}%, 90%)`
-      },
-      cancelSend: function (e) {
-        e.preventDefault()
+        let lum = rand(75, 95)
+        this.colorEye = `hsl(${hue.toFixed(0)}, ${(hslValues[1] * 100).toFixed(0)}%, ${lum}%)`
       }
     }
   })
@@ -101,12 +108,12 @@
 
 
   function shadeBlend(p,c0,c1) {
-    var n=p<0?p*-1:p,u=Math.round,w=parseInt;
+    let n=p<0?p*-1:p,u=Math.round,w=parseInt;
     if(c0.length>7){
-      var f=c0.split(","),t=(c1?c1:p<0?"rgb(0,0,0)":"rgb(255,255,255)").split(","),R=w(f[0].slice(4)),G=w(f[1]),B=w(f[2]);
+      let f=c0.split(","),t=(c1?c1:p<0?"rgb(0,0,0)":"rgb(255,255,255)").split(","),R=w(f[0].slice(4)),G=w(f[1]),B=w(f[2]);
       return "rgb("+(u((w(t[0].slice(4))-R)*n)+R)+","+(u((w(t[1])-G)*n)+G)+","+(u((w(t[2])-B)*n)+B)+")"
     }else{
-      var f=w(c0.slice(1),16),t=w((c1?c1:p<0?"#000000":"#FFFFFF").slice(1),16),R1=f>>16,G1=f>>8&0x00FF,B1=f&0x0000FF;
+      let f=w(c0.slice(1),16),t=w((c1?c1:p<0?"#000000":"#FFFFFF").slice(1),16),R1=f>>16,G1=f>>8&0x00FF,B1=f&0x0000FF;
       return "#"+(0x1000000+(u(((t>>16)-R1)*n)+R1)*0x10000+(u(((t>>8&0x00FF)-G1)*n)+G1)*0x100+(u(((t&0x0000FF)-B1)*n)+B1)).toString(16).slice(1)
     }
   }
@@ -114,13 +121,13 @@
   function rgbToHsl(r, g, b) {
     r /= 255, g /= 255, b /= 255;
 
-    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-    var h, s, l = (max + min) / 2;
+    let max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
 
     if (max == min) {
       h = s = 0; // achromatic
     } else {
-      var d = max - min;
+      let d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
       switch (max) {

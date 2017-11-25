@@ -29,3 +29,32 @@ form {
     font-size: 26px;
     font-weight: 100;
 }
+
+path, ellipse {
+    /* stroke-dasharray affects how long the stroke draw lines are, higher number looks more like drawing, lower number looks like a particle effect  */
+
+    /* stroke-dasharray length helps to be longer than the paths which effectively hides the paths    */
+    stroke-dasharray: 1000;
+
+    /* moves the position of the dashes, which makes them animate-able */
+    stroke-dashoffset: 1000;
+
+    /* remove "infinite" to have it draw only once */
+    animation-name: dash;
+    animation-delay: .8s;
+    animation-duration: 5s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    stroke-width:1px;
+    /* depending on the drawing, may need to use stroke-miterlimit to smooth out line segments that join at a sharp angle:  https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-miterlimit */
+    /*   stroke-miterlimit:10px; */
+}
+
+/* the animation */
+@keyframes dash {
+    to {
+        /* closing the offset makes the line appear to be drawn-in */
+        stroke-dashoffset: 0;
+    }
+}

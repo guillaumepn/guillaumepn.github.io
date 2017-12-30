@@ -1,0 +1,112 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Avenir Next', sans-serif;
+    color: #fff;
+}
+
+body {
+    width: 100%;
+    margin: 60px auto;
+}
+
+body > * {
+    padding: 0 120px;
+}
+
+/* HEADER */
+header {
+
+}
+
+.header {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 68px;
+}
+
+h1.sitetitle {
+    font-size: 38px;
+    color: #AAD77B;
+    margin-left: 30px;
+}
+
+
+/* MENU */
+nav {
+    position: relative;
+}
+
+#menu {
+    margin: 20px 0;
+}
+
+#menu ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#menu ul li {
+    list-style-type: none;
+}
+
+#menu ul li a {
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.daynight svg {
+    width: 65px;
+}
+
+.daynight {
+    cursor: pointer;
+}
+
+#sunCopy, #moonCopy {
+    opacity: 0;
+}
+
+.greenline {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px solid  #AAD77B;
+}
+
+
+/* MAIN CONTENT */
+main {
+
+}
+
+.announcement {
+    text-align: center;
+    position: relative;
+    margin: 40px 0;
+}
+
+.announcement img {
+    width: 470px;
+    padding-left: 125px;
+}
+
+.prochainement {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    font-weight: bold;
+    font-size: 27px;
+    transform: translateX(-43%) rotate(-5deg);
+    color: #fff;
+    background: #AAD77B;
+    padding: 10px 15px;
+    box-shadow: 0 4px 15px #455C73;
+}

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Wooly</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header">
+    <div class="logo">
+      <img src="cat.svg" alt="Logo Wooly">
+    </div>
+    <h1 class="sitetitle">Wooly</h1>
+  </div>
+</header>
+
+<nav>
+  <div id="menu">
+    <ul>
+      <li class="rules"><a href="">Règles du jeu</a></li>
+      <li class="account"><a href="">Mon compte</a></li>
+      <li class="play"><a href="">Jouer</a></li>
+      <li class="editor"><a href="">Éditeur</a></li>
+      <li class="daynight">
+        <svg @click="changeLight" width="102" height="42" viewBox="0 0 102 42" xmlns="http://www.w3.org/2000/svg">
+          <title>
+            daynight
+          </title>
+          <g transform="translate(1 1)" fill="none" fill-rule="evenodd">
+            <path d="M20 0h60m0 40H20" stroke="#AAD77B"/>
+            <path d="M20 0C8.954 0 0 8.954 0 20s8.954 20 20 20" stroke="#AAD77B"/>
+            <path d="M80 0c11.046 0 20 8.954 20 20s-8.954 20-20 20" stroke="#AAD77B"/>
+            <path id="sunCopy" fill="#E7E19D" d="M23 33.6l-3.317 3.073-1.887-4.108-4.24 1.57-.173-4.518-4.518-.172 1.57-4.24-4.108-1.888L9.4 20l-3.073-3.317 4.108-1.887-1.57-4.24 4.518-.173.172-4.518 4.24 1.57 1.888-4.108L23 6.4l3.317-3.073 1.887 4.108 4.24-1.57.173 4.518 4.518.172-1.57 4.24 4.108 1.888L36.6 20l3.073 3.317-4.108 1.887 1.57 4.24-4.518.173-.172 4.518-4.24-1.57-1.888 4.108"/>
+            <path id="sun" fill="#E7E19D" d="M23 33.6l-3.317 3.073-1.887-4.108-4.24 1.57-.173-4.518-4.518-.172 1.57-4.24-4.108-1.888L9.4 20l-3.073-3.317 4.108-1.887-1.57-4.24 4.518-.173.172-4.518 4.24 1.57 1.888-4.108L23 6.4l3.317-3.073 1.887 4.108 4.24-1.57.173 4.518 4.518.172-1.57 4.24 4.108 1.888L36.6 20l3.073 3.317-4.108 1.887 1.57 4.24-4.518.173-.172 4.518-4.24-1.57-1.888 4.108"/>
+            <circle id="moonCopy" fill="#D8E7F1" cx="79" cy="20" r="15"/>
+          </g>
+        </svg>
+      </li>
+    </ul>
+  </div>
+  <div class="greenline"></div>
+</nav>
+
+<main>
+  <section>
+    <div class="announcement">
+      <img src="pelotte.svg" alt="">
+      <div class="prochainement">
+        À venir prochainement !
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
+<script src="morphsvgplugin.js"></script>
+<script src="https://unpkg.com/vue"></script>
+
+<script>
+  let body = document.querySelector('body');
+  let sun = document.querySelector('#sun');
+  let moon = document.querySelector('#moon');
+
+  let style = document.querySelector('link');
+  // console.log(style.href);
+
+  let app = new Vue({
+    el: '#menu',
+    data: {
+      colorDay: '#fff',
+      colorNight: '#2c3e50',
+      current: '#fff',
+      colorSun: '#E7E19D',
+      colorMoon: '#D8E7F1'
+    },
+    methods: {
+      changeLight: function () {
+        if (this.current === this.colorDay) {
+          this.current = this.colorNight;
+          TweenMax.to('#sun', 1, {morphSVG:'#moonCopy', ease:Bounce.easeOut, fill:this.colorMoon})
+          style.href = 'stylesNight.css';
+        }
+        else {
+          this.current = this.colorDay;
+          TweenMax.to('#sun', 1, {morphSVG:'#sunCopy', ease:Bounce.easeOut, fill:this.colorSun})
+          style.href = 'styles.css';
+        }
+        body.style.background = this.current
+        body.style.transitionDuration = '.3s';
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

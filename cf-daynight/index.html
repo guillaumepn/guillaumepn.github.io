@@ -32,9 +32,9 @@
 <script src="morphsvgplugin.js"></script>
 <script src="https://unpkg.com/vue"></script>
 <script>
-  let body = document.querySelector('body')
-  let sun = document.querySelector('#sun')
-  let moon = document.querySelector('#moon')
+  let body = document.querySelector('body');
+  let sun = document.querySelector('#sun');
+  let moon = document.querySelector('#moon');
 
   let app = new Vue({
     el: '#app',
@@ -47,18 +47,18 @@
     },
     methods: {
       changeLight: function () {
-        if (this.current == this.colorDay) {
-          this.current = this.colorNight
+        if (this.current === this.colorDay) {
+          this.current = this.colorNight;
           TweenMax.to('#sun', 1, {morphSVG:'#moonCopy', ease:Bounce.easeOut, fill:this.colorMoon})
         }
         else {
-          this.current = this.colorDay
+          this.current = this.colorDay;
           TweenMax.to('#sun', 1, {morphSVG:'#sunCopy', ease:Bounce.easeOut, fill:this.colorSun})
         }
         body.style.background = this.current
       }
     }
-  })
+  });
 
 </script>
 </body>

@@ -4,7 +4,10 @@ var game = new Phaser.Game(768, 640, Phaser.AUTO, 'catfish-game', this, transpar
 
 // Inputs
 var cursors;
-var keyPressed = false;
+var keyUpPressed = false;
+var keyDownPressed = false;
+var keyLeftPressed = false;
+var keyRightPressed = false;
 
 // Objects
 var player = {
@@ -14,11 +17,25 @@ var player = {
   direction: 'down'
 };
 
+var goal = {
+  sprite: undefined,
+  x: 736,
+  y: 608
+};
+
+// Sprites and variables
+
+var playerShadow;
+var goalShadow;
+var shadowOffset = new Phaser.Point(0, 8);
+
+
 var catfish = {
   preload: function () {
   //  Chargement images
     game.load.image('fond', 'assets/images/background.png');
     game.load.image('player', 'assets/images/cat.png');
+    game.load.image('pelote', 'assets/images/woolball.png');
   },
   create: function () {
   //  Setup + affichage
@@ -26,8 +43,24 @@ var catfish = {
     game.add.sprite(0, 0, 'fond');
     cursors = game.input.keyboard.createCursorKeys();
 
+    goalShadow = game.add.sprite(goal.x, goal.y, 'pelote');
+    goalShadow.tint = 0x333333;
+    goalShadow.alpha = 0.6;
+    goalShadow.anchor.set(0.5);
+    goalShadow.x += shadowOffset.x;
+    goalShadow.y += shadowOffset.y;
+
+    goal.sprite = game.add.sprite(goal.x, goal.y, 'pelote');
+    goal.sprite.anchor.set(0.5);
+
+    playerShadow = game.add.sprite(player.x, player.y, 'player');
+    playerShadow.tint = 0x333333;
+    playerShadow.alpha = 0.6;
+    playerShadow.anchor.set(0.5);
+
     player.sprite = game.add.sprite(player.x, player.y, 'player');
     player.sprite.anchor.set(0.5);
+
 
     game.physics.arcade.enable(player.sprite);
 
@@ -37,48 +70,51 @@ var catfish = {
     player.sprite.body.velocity.x = 0;
     player.sprite.body.velocity.y = 0;
 
+    playerShadow.x = player.sprite.x + shadowOffset.x;
+    playerShadow.y = player.sprite.y + shadowOffset.y;
+
     // Down
     if (cursors.down.isDown) {
-      if (!this.keyPressed && player.sprite.y < 608) {
+      if (!this.keyDownPressed && player.sprite.y < 608) {
         player.sprite.y += 64;
-        this.keyPressed = true;
+        this.keyDownPressed = true;
       }
     }
     else if (cursors.down.isUp) {
-      this.keyPressed = false;
+      this.keyDownPressed = false;
     }
 
     // Up
     if (cursors.up.isDown) {
-      if (!this.keyPressed && player.sprite.y > 32) {
+      if (!this.keyUpPressed && player.sprite.y > 32) {
         player.sprite.y -= 64;
-        this.keyPressed = true;
+        this.keyUpPressed = true;
       }
     }
     else if (cursors.up.isUp) {
-      this.keyPressed = false;
+      this.keyUpPressed = false;
     }
 
     // Left
     if (cursors.left.isDown) {
-      if (!this.keyPressed && player.sprite.x > 32) {
+      if (!this.keyLeftPressed && player.sprite.x > 32) {
         player.sprite.x -= 64;
-        this.keyPressed = true;
+        this.keyLeftPressed = true;
       }
     }
     else if (cursors.left.isUp) {
-      this.keyPressed = false;
+      this.keyLeftPressed = false;
     }
 
     // Right
     if (cursors.right.isDown) {
-      if (!this.keyPressed && player.sprite.x < 736) {
+      if (!this.keyRightPressed && player.sprite.x < 736) {
         player.sprite.x += 64;
-        this.keyPressed = true;
+        this.keyRightPressed = true;
       }
     }
     else if (cursors.right.isUp) {
-      this.keyPressed = false;
+      this.keyRightPressed = false;
     }
 
 

@@ -10,7 +10,8 @@ import App from './App.vue'
  * Game code (with Pixi.js as 2D WebGL Renderer)
  */
 require('./assets/scss/app.scss');
-require('pixi.js');
+require('pixi.js')
+const path = require('path');
 
 PIXI.utils.sayHello();
 
@@ -23,8 +24,10 @@ document.getElementById('app').appendChild(renderer.view);
 
 let stage = new PIXI.Container();
 
+console.log(path.resolve(__dirname));
+
 PIXI.loader
-    .add("cat", "/src/assets/images/cat-sprite.png")
+    .add("cat", path.resolve(__dirname, "./src/assets/images/cat-sprite.png"))
     .load(setup);
 
 let cat;

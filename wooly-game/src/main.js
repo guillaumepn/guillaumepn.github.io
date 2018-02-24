@@ -27,7 +27,7 @@ let stage = new PIXI.Container();
 console.log(path.resolve(__dirname));
 
 PIXI.loader
-    .add("cat", path.resolve(__dirname, "./wooly-game/src/assets/images/cat-sprite.png"))
+    .add("cat", path.resolve(__dirname, "./src/assets/images/cat-sprite.png"))
     .load(setup);
 
 let cat;

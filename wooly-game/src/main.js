@@ -10,7 +10,7 @@ import App from './App.vue'
  * Game code (with Pixi.js as 2D WebGL Renderer)
  */
 require('./assets/scss/app.scss');
-require('pixi.js')
+require('pixi.js');
 const path = require('path');
 
 PIXI.utils.sayHello();
@@ -31,6 +31,7 @@ PIXI.loader
     .load(setup);
 
 let cat;
+let avance = true;
 
 function setup() {
     cat = new PIXI.Sprite(
@@ -40,6 +41,11 @@ function setup() {
     cat.anchor.set(0.5, 0.5);
     cat.x = 0;
     cat.y = 64;
+
+    cat.interactive = true;
+    cat.click = function () {
+        avance = !avance;
+    };
 
     console.log(cat.x);
 
@@ -51,7 +57,9 @@ function setup() {
 function loop() {
     requestAnimationFrame(loop);
     if (cat.x > renderer.width) cat.x = 0;
-    cat.x += 3;
+    if (cat.x < 0) cat.x = renderer.width;
+    if (avance) cat.x += 2;
+    else cat.x -= 2;
     cat.rotation += 0.01;
     renderer.render(stage);
 }

@@ -24,7 +24,7 @@ document.getElementById('app').appendChild(renderer.view);
 let stage = new PIXI.Container();
 
 PIXI.loader
-    .add("cat", "../src/assets/images/cat-sprite.png")
+    .add("cat", "./src/assets/images/cat-sprite.png")
     .load(setup);
 
 let cat;

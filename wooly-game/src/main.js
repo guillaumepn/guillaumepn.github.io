@@ -11,7 +11,6 @@ import App from './App.vue'
  */
 require('./assets/scss/app.scss');
 require('pixi.js');
-const path = require('path');
 
 PIXI.utils.sayHello();
 
@@ -23,8 +22,6 @@ let renderer = PIXI.autoDetectRenderer(640, 480, {
 document.getElementById('app').appendChild(renderer.view);
 
 let stage = new PIXI.Container();
-
-console.log(path.resolve(__dirname));
 
 PIXI.loader
     .add("cat", "../src/assets/images/cat-sprite.png")

@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import App from './App.vue'
+// import Vue from 'vue'
+// import App from './App.vue'
 
 // new Vue({
 //   el: '#app',
@@ -19,6 +19,16 @@ require('pixi.js');
  * @type {Grid}
  */
 const Grid = require('./components/grid');
+const Step = require('./components/step');
+
+/**
+ * Fonctions
+ */
+const onHover = require('./functions/onHover');
+const onOut = require('./functions/onOut');
+const onDragStart = require('./functions/onDragStart');
+const onDragEnd = require('./functions/onDragEnd');
+const onDragMove = require('./functions/onDragMove');
 
 // Affiche la version de Pixijs dans la console du navigateur
 PIXI.utils.sayHello();
@@ -31,8 +41,7 @@ let app = new PIXI.Application({
     width: 960,
     height: 480,
     resolution: 1,
-    // transparent: true
-    backgroundColor: 0xffffff
+    transparent: true
 });
 
 // Ajouter le <canvas> du jeu dans la <div id='app'>
@@ -56,15 +65,10 @@ menu.position.set(640, 0);
 container.addChild(stage);
 container.addChild(menu);
 
-// Dessine la grille sur la map
-let grid = new Grid(20, 14, 32, 32, stage);
-grid.draw();
 
-// Barre des actions possibles (dans le menu en bas)
-let actions = new PIXI.Container();
-menu.addChild(actions);
-
-// Chargement des sprites/images
+/**
+ * Chargement des sprites/images
+ */
 PIXI.loader
     .add("cat", "./src/assets/images/a-cat.svg")
     .add("forward", "./src/assets/images/forward.png")
@@ -73,97 +77,121 @@ PIXI.loader
     .add("wait", "./src/assets/images/wait.png")
     .load(setup);
 
+/**
+ * La map
+ */
+// Dessine la grille sur la map (voir ./components/grid.js)
+let grid = new Grid(20, 14, 32, 32, stage);
+grid.draw();
+
 let cat;
+
+
+/**
+ * Le menu
+ */
+// Barre des actions possibles (dans le menu en bas)
+let actions = new PIXI.Container();
+menu.addChild(actions);
+
 let forward;
 let turnleft;
 let turnright;
 let wait;
 
-function onDragStart(event) {
-    // store a reference to the data
-    // the reason for this is because of multitouch
-    // we want to track the movement of this particular touch
-    this.data = event.data;
-    this.alpha = 0.5;
-    this.dragging = true;
-}
-
-function onDragEnd() {
-    this.alpha = 1;
-    this.dragging = false;
-    // set the interaction data to null
-    this.data = null;
-}
-
-function onDragMove() {
-    if (this.dragging) {
-        var newPosition = this.data.getLocalPosition(this.parent);
-        this.x = newPosition.x;
-        this.y = newPosition.y;
+// Barre des steps que le chat fera (dans le menu en haut)
+let steps = new PIXI.Container();
+menu.addChild(steps);
+// On crée 10 steps vides, 5 sur chaque ligne...
+for (let y = 0; y < 2; y++) {
+    for (let x = 0; x < 5; x++) {
+        let step = new Step(x * 32, y * 32, 32, 32, '', steps);
+        step.draw();
     }
 }
+// ... puis on supprime la dernière, pour mettre le bouton PLAY à la place après
+steps.children.pop();
 
+menu.setChildIndex(steps, 0);
 
 /**
  * setup: au chargement de la page / du niveau
  */
 function setup() {
+    /**
+     * Map du jeu
+     */
     // On crée notre chat à partir du sprite
     cat = new PIXI.Sprite(
         PIXI.loader.resources['cat'].texture
     );
 
     // cat.scale.set(0.1, 0.1);
+    // xxx.anchor.set(...) : Définit le point d'origine du sprite (avec 0.5 => au milieu)
+    // cat.anchor.set(0.5, 0.5);
+    cat.x = 0;
+    cat.y = 0;
+
+    // On le rend "interactif" pour pouvoir utiliser des fonctions comme click() sur le chat
+    cat.interactive = true;
+    cat.click = function () {
+        //    Whatever
+    };
+
+    // On ajoute notre chat à notre niveau
+    stage.addChild(cat);
+
+
+    /**
+     * Menu
+     */
+    // On positionne les steps en haut et centré dans le menu
+    steps.x = (steps.parent.width / 2) - (steps.width / 2);
+    steps.y = 128;
 
     // Icones d'action
     forward = new PIXI.Sprite(
         PIXI.loader.resources['forward'].texture
     );
     forward.x = 0;
-    forward.interactive = true;
-    forward.buttonMode = true;
 
     turnleft = new PIXI.Sprite(
         PIXI.loader.resources['turnleft'].texture,
     );
     turnleft.x = 32;
-    turnleft.interactive = true;
-    turnleft.buttonMode = true;
 
     turnright = new PIXI.Sprite(
         PIXI.loader.resources['turnright'].texture
     );
     turnright.x = 64;
-    turnright.interactive = true;
-    turnright.buttonMode = true;
 
     wait = new PIXI.Sprite(
         PIXI.loader.resources['wait'].texture
     );
     wait.x = 96;
-    wait.interactive = true;
-    wait.buttonMode = true;
 
     actions.addChild(forward, turnleft, turnright, wait);
 
+    // On positionne notre barre d'actions en bas et centré dans le menu
     actions.x = (actions.parent.width / 2) - (actions.width / 2);
     actions.y = actions.parent.height - 128;
 
+
+    // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
+    // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
     for (let action of actions.children) {
+        action.interactive = true;
+        action.buttonMode = true;
+        action.anchor.set(0.5, 0.5);
         action
+            .on('pointerover', onHover)
+            .on('pointerout', onOut)
             .on('pointerdown', onDragStart)
             .on('pointerup', onDragEnd)
             .on('pointerupoutside', onDragEnd)
             .on('pointermove', onDragMove);
     }
 
-
-    // Définit le point d'origine du sprite (avec 0.5 => au milieu)
-    // cat.anchor.set(0.5, 0.5);
-    cat.x = 0;
-    cat.y = 0;
-
-    // For mouse-only events
 
     let mapText = new PIXI.Text('La map du jeu');
     mapText.x = 20;
@@ -175,19 +203,11 @@ function setup() {
     menuText.y = menu.height;
     menu.addChild(menuText);
 
-    // On le rend "interactif" pour pouvoir utiliser des fonctions comme click() sur le chat
-    cat.interactive = true;
-
-    cat.click = function () {
-    //    Whatever
-    };
-
-    // On ajoute notre chat à notre niveau
-    stage.addChild(cat);
 
     // On lance la fonction loop qui se répètera à chaque frame
     loop();
 }
+
 
 /**
  * loop: se répète à chaque frame

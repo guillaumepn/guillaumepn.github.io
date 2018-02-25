@@ -10,6 +10,7 @@ class Step {
 
     draw() {
         let step = new PIXI.Graphics();
+        step.beginFill(0xffffff);
         step.lineStyle(1, 0x000000, 0.2);
         step.drawRect(this.x, this.y, this.width, this.height);
         this.container.addChild(step);

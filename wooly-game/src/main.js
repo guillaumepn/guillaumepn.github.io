@@ -12,23 +12,20 @@
  */
 require('./assets/scss/app.scss');
 require('pixi.js');
+let _ = require('lodash');
+
 
 /**
  * Composants
- *
- * @type {Grid}
  */
 const Grid = require('./components/grid');
 const Step = require('./components/step');
+const Button = require('./components/button');
 
 /**
  * Fonctions
  */
-const onHover = require('./functions/onHover');
-const onOut = require('./functions/onOut');
-const onDragStart = require('./functions/onDragStart');
-const onDragEnd = require('./functions/onDragEnd');
-const onDragMove = require('./functions/onDragMove');
+
 
 // Affiche la version de Pixijs dans la console du navigateur
 PIXI.utils.sayHello();
@@ -105,7 +102,7 @@ menu.addChild(steps);
 // On crée 10 steps vides, 5 sur chaque ligne...
 for (let y = 0; y < 2; y++) {
     for (let x = 0; x < 5; x++) {
-        let step = new Step(x * 32, y * 32, 32, 32, '', steps);
+        let step = new Step(x * 32, y * 32, 31, 31, '', steps);
         step.draw();
     }
 }
@@ -121,10 +118,7 @@ function setup() {
     /**
      * Map du jeu
      */
-    // On crée notre chat à partir du sprite
-    cat = new PIXI.Sprite(
-        PIXI.loader.resources['cat'].texture
-    );
+    cat = new Button('cat');
 
     // cat.scale.set(0.1, 0.1);
     // xxx.anchor.set(...) : Définit le point d'origine du sprite (avec 0.5 => au milieu)
@@ -150,24 +144,16 @@ function setup() {
     steps.y = 128;
 
     // Icones d'action
-    forward = new PIXI.Sprite(
-        PIXI.loader.resources['forward'].texture
-    );
+    forward = new Button('forward');
     forward.x = 0;
 
-    turnleft = new PIXI.Sprite(
-        PIXI.loader.resources['turnleft'].texture,
-    );
+    turnleft = new Button('turnleft');
     turnleft.x = 32;
 
-    turnright = new PIXI.Sprite(
-        PIXI.loader.resources['turnright'].texture
-    );
+    turnright = new Button('turnright');
     turnright.x = 64;
 
-    wait = new PIXI.Sprite(
-        PIXI.loader.resources['wait'].texture
-    );
+    wait = new Button('wait');
     wait.x = 96;
 
     actions.addChild(forward, turnleft, turnright, wait);
@@ -176,9 +162,14 @@ function setup() {
     actions.x = (actions.parent.width / 2) - (actions.width / 2);
     actions.y = actions.parent.height - 128;
 
-
     // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
     // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
+    const onHover = require('./functions/onHover');
+    const onOut = require('./functions/onOut');
+    const onDragStart = require('./functions/onDragStart');
+    const onDragEnd = require('./functions/onDragEnd');
+    const onDragMove = require('./functions/onDragMove');
+
     for (let action of actions.children) {
         action.interactive = true;
         action.buttonMode = true;
@@ -203,7 +194,6 @@ function setup() {
     menuText.y = menu.height;
     menu.addChild(menuText);
 
-
     // On lance la fonction loop qui se répètera à chaque frame
     loop();
 }
@@ -219,3 +209,10 @@ function loop() {
 
     app.renderer.render(container);
 }
+
+// A la fin, on partage vers l'extérieur l'accès aux variables pour les fichiers qui en ont besoin
+// (exemple : la variable steps utilisée dans ./functions/onDragMove.js)
+module.exports = {
+    steps,
+    actions
+};

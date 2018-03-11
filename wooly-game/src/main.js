@@ -20,11 +20,7 @@ let _ = require('lodash');
  */
 const Grid = require('./components/grid');
 const Step = require('./components/step');
-const Button = require('./components/button');
-
-/**
- * Fonctions
- */
+const Sprite = require('./components/sprite');
 
 
 // Affiche la version de Pixijs dans la console du navigateur
@@ -35,10 +31,10 @@ PIXI.utils.sayHello();
  * Dimensions du canvas par défaut: 800 * 600
  */
 let app = new PIXI.Application({
-    width: 960,
-    height: 480,
-    resolution: 1,
-    transparent: true
+  width: 960,
+  height: 480,
+  resolution: 1,
+  transparent: true
 });
 
 // Ajouter le <canvas> du jeu dans la <div id='app'>
@@ -67,12 +63,13 @@ container.addChild(menu);
  * Chargement des sprites/images
  */
 PIXI.loader
-    .add("cat", "./src/assets/images/a-cat.svg")
-    .add("forward", "./src/assets/images/forward.png")
-    .add("turnleft", "./src/assets/images/turnleft.png")
-    .add("turnright", "./src/assets/images/turnright.png")
-    .add("wait", "./src/assets/images/wait.png")
-    .load(setup);
+  .add("forward", "./src/assets/images/forward.png")
+  .add("turnleft", "./src/assets/images/turnleft.png")
+  .add("turnright", "./src/assets/images/turnright.png")
+  .add("wait", "./src/assets/images/wait.png")
+  .add("play", "./src/assets/images/play.png")
+  .add("pause", "./src/assets/images/pause.png")
+  .load(setup);
 
 /**
  * La map
@@ -81,7 +78,7 @@ PIXI.loader
 let grid = new Grid(20, 14, 32, 32, stage);
 grid.draw();
 
-let cat;
+let cat = PIXI.Sprite.fromImage('./src/assets/images/a-cat.svg');
 
 
 /**
@@ -97,105 +94,128 @@ let turnright;
 let wait;
 
 // Barre des steps que le chat fera (dans le menu en haut)
+let stepsArea = new PIXI.Container();
 let steps = new PIXI.Container();
-menu.addChild(steps);
+let stepsObject = [];
+stepsArea.addChild(steps);
+
+menu.addChild(stepsArea);
 // On crée 10 steps vides, 5 sur chaque ligne...
 for (let y = 0; y < 2; y++) {
-    for (let x = 0; x < 5; x++) {
-        let step = new Step(x * 32, y * 32, 31, 31, '', steps);
-        step.draw();
-    }
+  for (let x = 0; x < 5; x++) {
+    let step = new Step(x * 32, y * 32, 31, 31, 'empty', steps);
+    step.draw();
+    stepsObject.push(step);
+  }
 }
+
 // ... puis on supprime la dernière, pour mettre le bouton PLAY à la place après
 steps.children.pop();
+stepsObject.pop();
 
-menu.setChildIndex(steps, 0);
+menu.setChildIndex(stepsArea, 0);
+
+let gameInstance = null;
 
 /**
  * setup: au chargement de la page / du niveau
  */
 function setup() {
-    /**
-     * Map du jeu
-     */
-    cat = new Button('cat');
+  /**
+   * Map du jeu
+   */
 
-    // cat.scale.set(0.1, 0.1);
-    // xxx.anchor.set(...) : Définit le point d'origine du sprite (avec 0.5 => au milieu)
-    // cat.anchor.set(0.5, 0.5);
-    cat.x = 0;
-    cat.y = 0;
+  cat.x = 0;
+  cat.y = 0;
 
-    // On le rend "interactif" pour pouvoir utiliser des fonctions comme click() sur le chat
-    cat.interactive = true;
-    cat.click = function () {
-        //    Whatever
-    };
-
-    // On ajoute notre chat à notre niveau
-    stage.addChild(cat);
+  // On ajoute notre chat à notre niveau
+  stage.addChild(cat);
 
 
-    /**
-     * Menu
-     */
-    // On positionne les steps en haut et centré dans le menu
-    steps.x = (steps.parent.width / 2) - (steps.width / 2);
-    steps.y = 128;
+  /**
+   * Menu
+   */
+  // On positionne les steps en haut et centré dans le menu
+  stepsArea.x = (stepsArea.parent.width / 2) - (stepsArea.width / 2);
+  stepsArea.y = 128;
+  // et le bouton Play en bas à gauche des steps
+  let play = new Sprite('play', 'play', 128, 32);
+  play.x = 128;
+  play.y = 32;
+  play.interactive = true;
+  play.buttonMode = true;
+  stepsArea.addChild(play);
 
-    // Icones d'action
-    forward = new Button('forward');
-    forward.x = 0;
+  // Icones d'action
+  forward = new Sprite('forward', 'forward');
+  forward.x = 0;
 
-    turnleft = new Button('turnleft');
-    turnleft.x = 32;
+  turnleft = new Sprite('turnleft', 'turnleft', 32);
+  turnleft.x = 32;
 
-    turnright = new Button('turnright');
-    turnright.x = 64;
+  turnright = new Sprite('turnright', 'turnright', 64);
+  turnright.x = 64;
 
-    wait = new Button('wait');
-    wait.x = 96;
+  wait = new Sprite('wait', 'wait', 96);
+  wait.x = 96;
 
-    actions.addChild(forward, turnleft, turnright, wait);
+  actions.addChild(forward, turnleft, turnright, wait);
 
-    // On positionne notre barre d'actions en bas et centré dans le menu
-    actions.x = (actions.parent.width / 2) - (actions.width / 2);
-    actions.y = actions.parent.height - 128;
+  // On positionne notre barre d'actions en bas et centré dans le menu
+  actions.x = (actions.parent.width / 2) - (actions.width / 2);
+  actions.y = actions.parent.height - 128;
 
-    // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
-    // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
-    const onHover = require('./functions/onHover');
-    const onOut = require('./functions/onOut');
-    const onDragStart = require('./functions/onDragStart');
-    const onDragEnd = require('./functions/onDragEnd');
-    const onDragMove = require('./functions/onDragMove');
+  // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
+  // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
+  const onHover = require('./functions/onHover');
+  const onOut = require('./functions/onOut');
+  const onDragStart = require('./functions/onDragStart');
+  const onDragEnd = require('./functions/onDragEnd');
+  const onDragMove = require('./functions/onDragMove');
 
-    for (let action of actions.children) {
-        action.interactive = true;
-        action.buttonMode = true;
-        action.anchor.set(0.5, 0.5);
-        action
-            .on('pointerover', onHover)
-            .on('pointerout', onOut)
-            .on('pointerdown', onDragStart)
-            .on('pointerup', onDragEnd)
-            .on('pointerupoutside', onDragEnd)
-            .on('pointermove', onDragMove);
+  for (let action of actions.children) {
+    action.interactive = true;
+    action.buttonMode = true;
+    action.anchor.set(0.5, 0.5);
+    action
+      .on('pointerover', onHover)
+      .on('pointerout', onOut)
+      .on('pointerdown', onDragStart)
+      .on('pointerup', onDragEnd)
+      .on('pointerupoutside', onDragEnd)
+      .on('pointermove', onDragMove);
+  }
+
+
+  let mapText = new PIXI.Text('map');
+  mapText.x = 20;
+  mapText.y = stage.height;
+  stage.addChild(mapText);
+
+  let menuText = new PIXI.Text('menu');
+  menuText.x = 20;
+  menuText.y = menu.height;
+  menu.addChild(menuText);
+
+
+  // Quand on clique sur le bouton Play du menu
+  let runGame = require('./functions/runGame');
+  let gameRunning = false;
+
+  play.click = function (e) {
+    gameRunning = !gameRunning;
+    if (gameRunning) {
+      runGame();
+      play.changeSprite("pause");
+    } else {
+      runGame('stop');
+      play.changeSprite("play");
     }
+  };
 
 
-    let mapText = new PIXI.Text('La map du jeu');
-    mapText.x = 20;
-    mapText.y = stage.height;
-    stage.addChild(mapText);
-
-    let menuText = new PIXI.Text('Le menu du jeu');
-    menuText.x = 20;
-    menuText.y = menu.height;
-    menu.addChild(menuText);
-
-    // On lance la fonction loop qui se répètera à chaque frame
-    loop();
+  // On lance la fonction loop qui se répètera à chaque frame
+  loop();
 }
 
 
@@ -203,16 +223,19 @@ function setup() {
  * loop: se répète à chaque frame
  */
 function loop() {
-    requestAnimationFrame(loop);
+  requestAnimationFrame(loop);
 
-    // cat.x += 2;
-
-    app.renderer.render(container);
+  app.renderer.render(container);
 }
 
-// A la fin, on partage vers l'extérieur l'accès aux variables pour les fichiers qui en ont besoin
+// A la fin, on exporte vers l'extérieur l'accès aux variables pour les fichiers qui en ont besoin
 // (exemple : la variable steps utilisée dans ./functions/onDragMove.js)
 module.exports = {
-    steps,
-    actions
+  app,
+  stepsArea,
+  steps,
+  stepsObject,
+  actions,
+  cat,
+  gameInstance
 };

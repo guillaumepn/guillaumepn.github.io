@@ -1,21 +1,49 @@
 let main = require('../main');
 let steps = main.steps;
+let stepsObject = main.stepsObject;
+let stepsArea = main.stepsArea;
+let actions = main.actions;
 
 module.exports = function onDragEnd() {
-    for (let step of steps.children) {
-        if ((step.tint).toString(16) === 'ff00') {
-            // console.log(step.getBounds());
-            // console.log(step.getLocalBounds());
-            this.setParent(steps);
-            this.anchor.set(0);
-            this.x = step.getLocalBounds().x;
-            this.y = step.getLocalBounds().y;
-            // console.log(step.getBounds());
-            console.log(`${step.x} et ${step.y}`);
-            step.tint = 0xffffff;
-        }
+  let onStep = false;
+  let theStep;
+  let theIndex;
+  let previousStep;
+
+  for (let [index, step] of steps.children.entries()) {
+    // Si on est au-dessus d'une case vide, on met l'action dessus
+    if (step.getBounds().contains(this.data.global.x, this.data.global.y)) {
+      if (stepsObject[index].type === 'empty' && (step.tint).toString(16) === 'ff00') {
+        theStep = step;
+        theIndex = index;
+        onStep = true;
+      }
     }
-    this.alpha = 1;
-    this.dragging = false;
-    this.data = null;
+  }
+
+  if (this.onStep) {
+    previousStep = this.currentStep;
+    stepsObject[previousStep].type = 'empty';
+  }
+
+  if (onStep) {
+    this.setParent(stepsArea);
+    this.anchor.set(0);
+    stepsObject[theIndex].type = this.name;
+    theStep.tint = 0xffffff;
+    this.x = theStep.getLocalBounds().x;
+    this.y = theStep.getLocalBounds().y;
+    this.onStep = true;
+    this.currentStep = theIndex;
+  } else {
+    this.setParent(actions);
+    this.anchor.set(0.5);
+    this.x = this.originX;
+    this.y = this.originY;
+    this.onStep = false;
+  }
+
+  this.alpha = 1;
+  this.dragging = false;
+  this.data = null;
 };

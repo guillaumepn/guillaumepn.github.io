@@ -14,6 +14,8 @@ require('./assets/scss/app.scss');
 require('pixi.js');
 let _ = require('lodash');
 
+let logs = [];
+
 
 /**
  * Composants
@@ -202,15 +204,21 @@ function setup() {
   let runGame = require('./functions/runGame');
   let gameRunning = false;
 
-  play.click = function (e) {
+  play.click = function () {
     gameRunning = !gameRunning;
-    if (gameRunning) {
-      runGame();
+    // On lance le jeu SI il y a au moins une step définie avec une action
+    if (gameRunning && stepsObject.filter(step => step.type !== 'empty').length > 0) {
+      runGame('run');
       play.changeSprite("pause");
-    } else {
+      logs.push('Ca marche !');
+    }
+    // Sinon, on ne lance pas le jeu, ou on le stoppe s'il était lancé
+    else {
       runGame('stop');
       play.changeSprite("play");
+      logs.push('Ca s\'arrête !');
     }
+    writeLogs();
   };
 
 
@@ -226,6 +234,19 @@ function loop() {
   requestAnimationFrame(loop);
 
   app.renderer.render(container);
+}
+
+
+// Affichage des logs :
+let logsDiv = document.querySelector('#logs');
+function writeLogs() {
+  logsDiv.innerHTML = '';
+  for (let log of logs) {
+    let logHtml = document.createElement('div');
+    logHtml.setAttribute('class', 'log');
+    logHtml.innerHTML = `<div>${log}</div>`;
+    logsDiv.appendChild(logHtml);
+  }
 }
 
 // A la fin, on exporte vers l'extérieur l'accès aux variables pour les fichiers qui en ont besoin

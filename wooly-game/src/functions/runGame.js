@@ -12,13 +12,17 @@ let cat = main.cat;
 let gameInstance = main.gameInstance;
 
 module.exports = function runGame(action = 'run') {
+  console.log(steps.children);
+  console.log(stepsObject);
+  // Bouton Stop a été cliqué :
   if (action === 'stop') {
-    clearInterval(gameInstance);
-    console.log('game stoppped');
-  } else {
+    stopGame();
+  }
+  // Bouton Play a été cliqué :
+  else {
     console.log("Game running");
-    console.log(app.renderer.width);
-    console.log(`${app.renderer.width} et ${app.renderer.height}`);
+    // console.log(app.renderer.width);
+    // console.log(`${app.renderer.width} et ${app.renderer.height}`);
 
     const catInMap =
       cat.x >= 0 && cat.x < app.renderer.width &&
@@ -27,6 +31,10 @@ module.exports = function runGame(action = 'run') {
     let cnt = 0;
 
     gameInstance = setInterval(() => {
+      steps.children.filter(step => {
+        step.tint = 0xffffff;
+      });
+      steps.children[cnt].tint = 0xd7e5b0;
       console.log("interval running");
       switch (stepsObject[cnt].type) {
         case 'empty': break;
@@ -38,5 +46,11 @@ module.exports = function runGame(action = 'run') {
       cnt++;
       if (cnt === 9) cnt = 0;
     }, 500);
+
   }
 };
+
+function stopGame() {
+  clearInterval(gameInstance);
+  console.log('game stopped');
+}

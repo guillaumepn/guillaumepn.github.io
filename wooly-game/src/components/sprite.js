@@ -1,6 +1,6 @@
 class Sprite extends PIXI.Sprite {
 
-  constructor(texture, name, originX = 0, originY = 0, onStep = false, currentStep = null) {
+  constructor(texture = null, name = '', originX = 0, originY = 0, onStep = false, currentStep = null) {
     super(PIXI.loader.resources[texture].texture);
     this._name = name;
     this._originX = originX;

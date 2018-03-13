@@ -117,7 +117,7 @@ stepsObject.pop();
 
 menu.setChildIndex(stepsArea, 0);
 
-let gameInstance = null;
+let gameInstance = undefined;
 
 /**
  * setup: au chargement de la page / du niveau

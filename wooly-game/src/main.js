@@ -167,26 +167,28 @@ function setup() {
   actions.x = (actions.parent.width / 2) - (actions.width / 2);
   actions.y = actions.parent.height - 128;
 
-  // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
-  // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
-  const onHover = require('./functions/onHover');
-  const onOut = require('./functions/onOut');
-  const onDragStart = require('./functions/onDragStart');
-  const onDragEnd = require('./functions/onDragEnd');
-  const onDragMove = require('./functions/onDragMove');
+  // // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
+  // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
+  // const onHover = require('./functions/onHover');
+  // const onOut = require('./functions/onOut');
+  // const onDragStart = require('./functions/onDragStart');
+  // const onDragEnd = require('./functions/onDragEnd');
+  // const onDragMove = require('./functions/onDragMove');
 
-  for (let action of actions.children) {
-    action.interactive = true;
-    action.buttonMode = true;
-    action.anchor.set(0.5, 0.5);
-    action
-      .on('pointerover', onHover)
-      .on('pointerout', onOut)
-      .on('pointerdown', onDragStart)
-      .on('pointerup', onDragEnd)
-      .on('pointerupoutside', onDragEnd)
-      .on('pointermove', onDragMove);
-  }
+  // for (let action of actions.children) {
+  //   action.interactive = true;
+  //   action.buttonMode = true;
+  //   action.anchor.set(0.5, 0.5);
+  //   action
+  //     .on('pointerover', onHover)
+  //     .on('pointerout', onOut)
+  //     .on('pointerdown', onDragStart)
+  //     .on('pointerup', onDragEnd)
+  //     .on('pointerupoutside', onDragEnd)
+  //     .on('pointermove', onDragMove);
+  // }
+
+  checkActions();
 
 
   let mapText = new PIXI.Text('map');
@@ -236,6 +238,30 @@ function loop() {
   app.renderer.render(container);
 }
 
+function checkActions() {
+
+  // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
+  // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
+  const onHover = require('./functions/onHover');
+  const onOut = require('./functions/onOut');
+  const onDragStart = require('./functions/onDragStart');
+  const onDragEnd = require('./functions/onDragEnd');
+  const onDragMove = require('./functions/onDragMove');
+
+  for (let action of actions.children) {
+    action.interactive = true;
+    action.buttonMode = true;
+    action.anchor.set(0.5, 0.5);
+    action
+      .on('pointerover', onHover)
+      .on('pointerout', onOut)
+      .on('pointerdown', onDragStart)
+      .on('pointerup', onDragEnd)
+      .on('pointerupoutside', onDragEnd)
+      .on('pointermove', onDragMove);
+  }
+}
+
 
 // Affichage des logs :
 let logsDiv = document.querySelector('#logs');
@@ -253,10 +279,12 @@ function writeLogs() {
 // (exemple : la variable steps utilisée dans ./functions/onDragMove.js)
 module.exports = {
   app,
+  grid,
+  actions,
   stepsArea,
   steps,
   stepsObject,
-  actions,
   cat,
-  gameInstance
+  gameInstance,
+  checkActions
 };

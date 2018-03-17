@@ -22,6 +22,14 @@ class Grid {
 
         console.log(`Grille de ${this.horizontalTiles} sur ${this.verticalTiles}`);
     }
+
+    getWidth() {
+      return this.horizontalTiles * this.tileWidth;
+    }
+
+    getHeight() {
+      return this.verticalTiles * this.tileHeight;
+    }
 }
 
 module.exports = Grid;

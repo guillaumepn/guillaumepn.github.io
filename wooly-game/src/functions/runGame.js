@@ -3,6 +3,7 @@
 * */
 
 let main = require('../main');
+let grid = main.grid;
 let app = main.app;
 let steps = main.steps;
 let stepsObject = main.stepsObject;
@@ -11,9 +12,10 @@ let gameInstance = main.gameInstance;
 
 let cnt = 0;
 let timeOut;
+let catDirection = 'south';
 let catInMap =
-  cat.x >= 0 && cat.x < app.renderer.width &&
-  cat.y >= 0 && cat.y < app.renderer.height;
+  cat.x >= 0 && cat.x < grid.getWidth() &&
+  cat.y >= 0 && cat.y < grid.getHeight();
 
 module.exports = function runGame(action = 'run') {
   console.log(steps.children);
@@ -35,8 +37,8 @@ module.exports = function runGame(action = 'run') {
 
 function readSteps() {
   catInMap =
-    cat.x >= 0 && cat.x < app.renderer.width &&
-    cat.y >= 0 && cat.y < app.renderer.height;
+    cat.x >= 0 && cat.x < (grid.getWidth() - 32) &&
+    cat.y >= 0 && cat.y < (grid.getHeight() - 32);
 
   gameInstance = undefined;
 
@@ -49,12 +51,17 @@ function readSteps() {
   });
 
   steps.children[cnt].tint = 0xd7e5b0;
-  console.log("frame running");
 
   switch (stepsObject[cnt].type) {
     case 'empty': break;
     case 'forward':
-      cat.y += 32;
+      moveForward();
+      break;
+    case 'turnleft':
+      turnLeft();
+      break;
+    case 'turnright':
+      turnRight();
       break;
     default: break;
   }
@@ -63,6 +70,7 @@ function readSteps() {
 
     if (stepsObject[cnt].type !== 'empty') {
       updateCounter();
+      console.log(cat.x + " " + grid.getWidth());
       timeOut = setTimeout(() => {
         if (!gameInstance)
           gameInstance = requestAnimationFrame(readSteps);
@@ -79,6 +87,60 @@ function readSteps() {
 function updateCounter() {
   cnt++;
   if (cnt === 9) cnt = 0;
+}
+
+function moveForward() {
+  switch (catDirection) {
+    case 'south':
+      cat.y += 32;
+      break;
+    case 'west':
+      cat.x -= 32;
+      break;
+    case 'north':
+      cat.y -= 32;
+      break;
+    case 'east':
+      cat.x += 32;
+      break;
+    default: break;
+  }
+}
+
+function turnLeft() {
+  switch (catDirection) {
+    case 'south':
+      catDirection = 'west';
+      break;
+    case 'west':
+      catDirection = 'north';
+      break;
+    case 'north':
+      catDirection = 'east';
+      break;
+    case 'east':
+      catDirection = 'south';
+      break;
+    default: break;
+  }
+}
+
+function turnRight() {
+  switch (catDirection) {
+    case 'south':
+      catDirection = 'east';
+      break;
+    case 'west':
+      catDirection = 'south';
+      break;
+    case 'north':
+      catDirection = 'west';
+      break;
+    case 'east':
+      catDirection = 'north';
+      break;
+    default: break;
+  }
 }
 
 function stopGame() {

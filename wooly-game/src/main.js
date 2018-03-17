@@ -65,9 +65,9 @@ container.addChild(menu);
  * Chargement des sprites/images
  */
 PIXI.loader
-  .add("forward", "./src/assets/images/forward.png")
-  .add("turnleft", "./src/assets/images/turnleft.png")
-  .add("turnright", "./src/assets/images/turnright.png")
+  .add("forward", "./src/assets/images/move.png")
+  .add("turnleft", "./src/assets/images/clockwise.png")
+  .add("turnright", "./src/assets/images/anticlockwise.png")
   .add("wait", "./src/assets/images/wait.png")
   .add("play", "./src/assets/images/play.png")
   .add("pause", "./src/assets/images/pause.png")
@@ -169,25 +169,6 @@ function setup() {
 
   // // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
   // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
-  // const onHover = require('./functions/onHover');
-  // const onOut = require('./functions/onOut');
-  // const onDragStart = require('./functions/onDragStart');
-  // const onDragEnd = require('./functions/onDragEnd');
-  // const onDragMove = require('./functions/onDragMove');
-
-  // for (let action of actions.children) {
-  //   action.interactive = true;
-  //   action.buttonMode = true;
-  //   action.anchor.set(0.5, 0.5);
-  //   action
-  //     .on('pointerover', onHover)
-  //     .on('pointerout', onOut)
-  //     .on('pointerdown', onDragStart)
-  //     .on('pointerup', onDragEnd)
-  //     .on('pointerupoutside', onDragEnd)
-  //     .on('pointermove', onDragMove);
-  // }
-
   checkActions();
 
 

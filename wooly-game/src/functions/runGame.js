@@ -74,7 +74,7 @@ function readSteps() {
       timeOut = setTimeout(() => {
         if (!gameInstance)
           gameInstance = requestAnimationFrame(readSteps);
-      }, 500);
+      }, 200);
     } else {
       updateCounter();
       if (!gameInstance)

@@ -18,11 +18,11 @@ let catInMap =
   cat.y >= 0 && cat.y < grid.getHeight();
 
 module.exports = function runGame(action = 'run') {
-  console.log(steps.children);
-  console.log(stepsObject);
   // Bouton Stop a été cliqué :
   if (action === 'stop') {
     stopGame();
+    cat.x = 0;
+    cat.y = 0;
   }
   // Bouton Play a été cliqué :
   else {
@@ -40,6 +40,7 @@ function readSteps() {
     cat.x >= 0 && cat.x < (grid.getWidth() - 32) &&
     cat.y >= 0 && cat.y < (grid.getHeight() - 32);
 
+  // console.log(`${cat.x} et ${cat.y}`);
   gameInstance = undefined;
 
   if (!catInMap) {
@@ -70,7 +71,6 @@ function readSteps() {
 
     if (stepsObject[cnt].type !== 'empty') {
       updateCounter();
-      console.log(cat.x + " " + grid.getWidth());
       timeOut = setTimeout(() => {
         if (!gameInstance)
           gameInstance = requestAnimationFrame(readSteps);
@@ -92,16 +92,28 @@ function updateCounter() {
 function moveForward() {
   switch (catDirection) {
     case 'south':
-      cat.y += 32;
+      if (cat.y + 32 < grid.getHeight())
+        cat.y += 32;
+      else
+        stopGame();
       break;
     case 'west':
-      cat.x -= 32;
+      if (cat.x - 32 >= 0)
+        cat.x -= 32;
+      else
+        stopGame();
       break;
     case 'north':
-      cat.y -= 32;
+      if (cat.y - 32 >= 0)
+        cat.y -= 32;
+      else
+        stopGame();
       break;
     case 'east':
-      cat.x += 32;
+      if (cat.x + 32 < grid.getWidth())
+        cat.x += 32;
+      else
+        stopGame();
       break;
     default: break;
   }
@@ -145,7 +157,6 @@ function turnRight() {
 
 function stopGame() {
   clearTimeout(timeOut);
-  // if (gameInstance)
   cancelAnimationFrame(gameInstance);
   gameInstance = undefined;
   steps.children.filter(step => {

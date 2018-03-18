@@ -11,12 +11,15 @@ module.exports = function onDragEnd() {
   let previousStep;
 
   for (let [index, step] of steps.children.entries()) {
+    let point = this.data.global;
     // Si on est au-dessus d'une case vide, on met l'action dessus
-    if (step.getBounds().contains(this.data.global.x, this.data.global.y)) {
+    if (step.getBounds().contains(point.x, point.y)) {
+      console.log(point);
       if (stepsObject[index].type === 'empty' && (step.tint).toString(16) === 'ff00') {
         theStep = step;
         theIndex = index;
         onStep = true;
+        break;
       }
     }
   }

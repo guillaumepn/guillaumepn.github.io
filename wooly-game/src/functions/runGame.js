@@ -23,6 +23,7 @@ module.exports = function runGame(action = 'run') {
     stopGame();
     cat.x = 0;
     cat.y = 0;
+    catDirection = 'south';
   }
   // Bouton Play a été cliqué :
   else {

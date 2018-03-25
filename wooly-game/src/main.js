@@ -24,7 +24,6 @@ const Grid = require('./components/grid');
 const Step = require('./components/step');
 const Sprite = require('./components/sprite');
 
-
 // Affiche la version de Pixijs dans la console du navigateur
 PIXI.utils.sayHello();
 
@@ -71,6 +70,7 @@ PIXI.loader
   .add("wait", "./src/assets/images/wait.png")
   .add("play", "./src/assets/images/play.png")
   .add("pause", "./src/assets/images/pause.png")
+  .add("tooltip", "./src/assets/images/tooltip.png")
   .load(setup);
 
 /**
@@ -117,6 +117,10 @@ stepsObject.pop();
 
 menu.setChildIndex(stepsArea, 0);
 
+// Zone des tooltips
+let tooltips = new PIXI.Container();
+menu.addChild(tooltips);
+
 let gameInstance = undefined;
 
 /**
@@ -137,6 +141,9 @@ function setup() {
   /**
    * Menu
    */
+  const onHover = require('./functions/onHover');
+  const onOut = require('./functions/onOut');
+
   // On positionne les steps en haut et centré dans le menu
   stepsArea.x = (stepsArea.parent.width / 2) - (stepsArea.width / 2);
   stepsArea.y = 128;
@@ -147,29 +154,51 @@ function setup() {
   play.interactive = true;
   play.buttonMode = true;
   stepsArea.addChild(play);
+  play
+    .on('pointerover', onHover)
+    .on('pointerout', onOut);
+  play.hasTooltip = true;
+  play.tooltip = 'Exécute la série des actions en boucle';
+  tooltips.addChild(play.tooltip);
 
   // Icones d'action
   forward = new Sprite('forward', 'forward');
   forward.x = 0;
+  forward.hasTooltip = true;
+  forward.tooltip = 'Fait avancer le chat d\'une case dans sa direction actuelle';
+  tooltips.addChild(forward.tooltip);
 
   turnleft = new Sprite('turnleft', 'turnleft', 32);
   turnleft.x = 32;
+  turnleft.hasTooltip = true;
+  turnleft.tooltip = 'Change la direction du chat de 90° dans le sens des aiguilles d\'une montre';
+  tooltips.addChild(turnleft.tooltip);
 
   turnright = new Sprite('turnright', 'turnright', 64);
   turnright.x = 64;
+  turnright.hasTooltip = true;
+  turnright.tooltip = 'Change la direction du chat de 90° dans le sens inverse des aiguilles d\'une montre';
+  tooltips.addChild(turnright.tooltip);
 
   wait = new Sprite('wait', 'wait', 96);
   wait.x = 96;
+  wait.hasTooltip = true;
+  wait.tooltip = 'Attend (sert à rien pour l\'instant - ptet à virer)';
+  tooltips.addChild(wait.tooltip);
 
   actions.addChild(forward, turnleft, turnright, wait);
 
   // On positionne notre barre d'actions en bas et centré dans le menu
   actions.x = (actions.parent.width / 2) - (actions.width / 2);
-  actions.y = actions.parent.height - 128;
+  actions.y = actions.parent.height - 192;
 
   // // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
   // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
   checkActions();
+
+  // On positionne la zone où les tooltips s'afficheront
+  tooltips.x = 0;
+  tooltips.y = tooltips.parent.height - 128;
 
 
   let mapText = new PIXI.Text('map');
@@ -262,9 +291,11 @@ module.exports = {
   app,
   grid,
   actions,
+  menu,
   stepsArea,
   steps,
   stepsObject,
+  tooltips,
   cat,
   gameInstance,
   checkActions

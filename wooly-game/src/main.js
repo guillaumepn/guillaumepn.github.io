@@ -21,6 +21,7 @@ let logs = [];
  * Composants
  */
 const Grid = require('./components/grid');
+const IsoGrid = require('./components/isogrid');
 const Step = require('./components/step');
 const Sprite = require('./components/sprite');
 
@@ -46,7 +47,8 @@ let container = new PIXI.Container();
 
 // Création du container du niveau
 let stage = new PIXI.Graphics();
-stage.beginFill(0xb8e994);
+// stage.beginFill(0xb8e994);
+stage.beginFill(0xffffff);
 stage.drawRect(0, 0, 640, (app.renderer.height - 32));
 
 // Création du container du menu
@@ -73,12 +75,18 @@ PIXI.loader
   .add("tooltip", "./src/assets/images/tooltip.png")
   .load(setup);
 
+
 /**
  * La map
  */
 // Dessine la grille sur la map (voir ./components/grid.js)
-let grid = new Grid(20, 14, 32, 32, stage);
-grid.draw();
+// let grid = new Grid(20, 14, 32, 32, stage);
+// grid.draw();
+let textures = {
+  floor: 'iso-grass'
+};
+
+let grid = new IsoGrid(10, 14, 64, 32, stage, textures);
 
 let cat = PIXI.Sprite.fromImage('./src/assets/images/a-cat.svg');
 
@@ -127,12 +135,15 @@ let gameInstance = undefined;
  * setup: au chargement de la page / du niveau
  */
 function setup() {
+
   /**
    * Map du jeu
    */
+  grid.draw();
 
-  cat.x = 0;
-  cat.y = 0;
+  cat.anchor.set(0.5, 1);
+  cat.x = stage.children[45].infos.x;
+  cat.y = stage.children[45].infos.y;
 
   // On ajoute notre chat à notre niveau
   stage.addChild(cat);
@@ -290,6 +301,7 @@ function writeLogs() {
 module.exports = {
   app,
   grid,
+  stage,
   actions,
   menu,
   stepsArea,

@@ -4,6 +4,7 @@
 
 let main = require('../main');
 let grid = main.grid;
+let stage = main.stage;
 let app = main.app;
 let steps = main.steps;
 let stepsObject = main.stepsObject;
@@ -21,8 +22,8 @@ module.exports = function runGame(action = 'run') {
   // Bouton Stop a été cliqué :
   if (action === 'stop') {
     stopGame();
-    cat.x = 0;
-    cat.y = 0;
+    cat.x = stage.children[45].infos.x;
+    cat.y = stage.children[45].infos.y;
     catDirection = 'south';
   }
   // Bouton Play a été cliqué :
@@ -93,24 +94,28 @@ function updateCounter() {
 function moveForward() {
   switch (catDirection) {
     case 'south':
+      cat.x += 32;
       if (cat.y + 32 < grid.getHeight())
-        cat.y += 32;
+        cat.y += 16;
       else
         stopGame();
       break;
     case 'west':
+      cat.y += 16;
       if (cat.x - 32 >= 0)
         cat.x -= 32;
       else
         stopGame();
       break;
     case 'north':
+      cat.x -= 32;
       if (cat.y - 32 >= 0)
-        cat.y -= 32;
+        cat.y -= 16;
       else
         stopGame();
       break;
     case 'east':
+      cat.y -= 16;
       if (cat.x + 32 < grid.getWidth())
         cat.x += 32;
       else

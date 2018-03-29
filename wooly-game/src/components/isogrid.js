@@ -31,7 +31,6 @@ class IsoGrid {
         this.container.addChild(floor);
         x += 64;
         tileId++;
-        console.log(floor.infos);
       }
 
       x = initialX - 32;
@@ -53,7 +52,6 @@ class IsoGrid {
         this.container.addChild(floor);
         x += 64;
         tileId++;
-        console.log(floor.infos);
       }
 
       x = initialX + 32;
@@ -62,9 +60,7 @@ class IsoGrid {
       tilesLine--;
     }
 
-    console.log(this.container.children[78].infos);
-
-    console.log(`Grille de ${this.horizontalTiles} sur ${this.verticalTiles}`);
+    // console.log(this.container.children[78].infos);
   }
 
   getWidth() {

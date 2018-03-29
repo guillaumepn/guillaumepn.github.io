@@ -1,7 +1,6 @@
-/*
+/**
 * Ce module est appelé quand le joueur clique sur le bouton Play dans un niveau
 * */
-
 let main = require('../main');
 let grid = main.grid;
 let stage = main.stage;
@@ -12,11 +11,9 @@ let cat = main.cat;
 let gameInstance = main.gameInstance;
 
 let cnt = 0;
-let timeOut;
+let timeOut = null;
 let catDirection = 'south';
-let catInMap =
-  cat.x >= 0 && cat.x < grid.getWidth() &&
-  cat.y >= 0 && cat.y < grid.getHeight();
+let stopped = false;
 
 module.exports = function runGame(action = 'run') {
   // Bouton Stop a été cliqué :
@@ -28,24 +25,25 @@ module.exports = function runGame(action = 'run') {
   }
   // Bouton Play a été cliqué :
   else {
+    stopped = false;
+    cnt = 0;
+    catDirection = 'south';
+
     console.log("Game running");
     // console.log(app.renderer.width);
     // console.log(`${app.renderer.width} et ${app.renderer.height}`);
 
-    if (!gameInstance)
+    if (!gameInstance) {
       requestAnimationFrame(readSteps);
+    }
   }
 };
 
 function readSteps() {
-  catInMap =
-    cat.x >= 0 && cat.x < (grid.getWidth() - 32) &&
-    cat.y >= 0 && cat.y < (grid.getHeight() - 32);
 
-  // console.log(`${cat.x} et ${cat.y}`);
   gameInstance = undefined;
 
-  if (!catInMap) {
+  if (isOnMap(cat.x, cat.y) === 0) {
     stopGame();
   }
 
@@ -69,16 +67,16 @@ function readSteps() {
     default: break;
   }
 
-  if (catInMap) {
+  if (isOnMap(cat.x, cat.y) > 0) {
 
-    if (stepsObject[cnt].type !== 'empty') {
-      updateCounter();
+    updateCounter();
+
+    if (stepsObject[cnt].type !== 'empty' && !stopped) {
       timeOut = setTimeout(() => {
         if (!gameInstance)
           gameInstance = requestAnimationFrame(readSteps);
       }, 200);
-    } else {
-      updateCounter();
+    } else if (stepsObject[cnt].type === 'empty' && !stopped) {
       if (!gameInstance)
         gameInstance = requestAnimationFrame(readSteps);
     }
@@ -94,35 +92,40 @@ function updateCounter() {
 function moveForward() {
   switch (catDirection) {
     case 'south':
-      cat.x += 32;
-      if (cat.y + 32 < grid.getHeight())
+      if (isOnMap(cat.x + 32, cat.y + 16) > 0) {
+        cat.x += 32;
         cat.y += 16;
-      else
+      } else
         stopGame();
       break;
     case 'west':
-      cat.y += 16;
-      if (cat.x - 32 >= 0)
+      if (isOnMap(cat.x - 32, cat.y + 16) > 0) {
         cat.x -= 32;
-      else
+        cat.y += 16;
+      } else
         stopGame();
       break;
     case 'north':
-      cat.x -= 32;
-      if (cat.y - 32 >= 0)
+      if (isOnMap(cat.x - 32, cat.y - 16) > 0) {
+        cat.x -= 32;
         cat.y -= 16;
+      }
       else
         stopGame();
       break;
     case 'east':
-      cat.y -= 16;
-      if (cat.x + 32 < grid.getWidth())
+      if (isOnMap(cat.x + 32, cat.y - 16) > 0) {
         cat.x += 32;
-      else
+        cat.y -= 16;
+      } else
         stopGame();
       break;
     default: break;
   }
+}
+
+function isOnMap(x, y) {
+  return stage.children.filter((tile, i) => JSON.stringify(tile.infos) === JSON.stringify({id: i, x: x, y: y})).length;
 }
 
 function turnLeft() {
@@ -162,8 +165,9 @@ function turnRight() {
 }
 
 function stopGame() {
-  clearTimeout(timeOut);
   cancelAnimationFrame(gameInstance);
+  clearTimeout(timeOut);
+  stopped = true;
   gameInstance = undefined;
   steps.children.filter(step => {
     step.tint = 0xffffff;

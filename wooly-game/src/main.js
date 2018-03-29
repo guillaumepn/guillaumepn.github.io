@@ -148,7 +148,6 @@ function setup() {
   // On ajoute notre chat à notre niveau
   stage.addChild(cat);
 
-
   /**
    * Menu
    */

@@ -14,7 +14,6 @@ module.exports = function onDragEnd() {
     let point = this.data.global;
     // Si on est au-dessus d'une case vide, on met l'action dessus
     if (step.getBounds().contains(point.x, point.y)) {
-      console.log(point);
       if (stepsObject[index].type === 'empty' && (step.tint).toString(16) === 'ff00') {
         theStep = step;
         theIndex = index;

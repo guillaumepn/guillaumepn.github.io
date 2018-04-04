@@ -25,6 +25,9 @@ const IsoGrid = require('./components/isogrid');
 const Step = require('./components/step');
 const Sprite = require('./components/sprite');
 
+// Map du niveau (JSON)
+const map = require('./assets/maps/map01');
+
 // Affiche la version de Pixijs dans la console du navigateur
 PIXI.utils.sayHello();
 
@@ -83,7 +86,7 @@ PIXI.loader
 // let grid = new Grid(20, 14, 32, 32, stage);
 // grid.draw();
 let textures = {
-  floor: 'iso-grass'
+  floor: 'grass'
 };
 
 let grid = new IsoGrid(10, 14, 64, 32, stage, textures);
@@ -142,8 +145,9 @@ function setup() {
   grid.draw();
 
   cat.anchor.set(0.5, 1);
-  cat.x = stage.children[45].infos.x;
-  cat.y = stage.children[45].infos.y;
+  // Appelle les données JSON du joueur dans le fichier assets/maps/**.json
+  cat.x = stage.children[map.player.originTileId].infos.x;
+  cat.y = stage.children[map.player.originTileId].infos.y;
 
   // On ajoute notre chat à notre niveau
   stage.addChild(cat);

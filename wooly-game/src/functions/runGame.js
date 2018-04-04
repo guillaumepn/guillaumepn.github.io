@@ -10,24 +10,27 @@ let stepsObject = main.stepsObject;
 let cat = main.cat;
 let gameInstance = main.gameInstance;
 
+// Données JSON de la map
+const map = require('../assets/maps/map01');
+
 let cnt = 0;
 let timeOut = null;
-let catDirection = 'south';
+let catDirection = map.player.originDirection;
 let stopped = false;
 
 module.exports = function runGame(action = 'run') {
   // Bouton Stop a été cliqué :
   if (action === 'stop') {
     stopGame();
-    cat.x = stage.children[45].infos.x;
-    cat.y = stage.children[45].infos.y;
-    catDirection = 'south';
+    cat.x = stage.children[map.player.originTileId].infos.x;
+    cat.y = stage.children[map.player.originTileId].infos.y;
+    catDirection = map.player.originDirection;
   }
   // Bouton Play a été cliqué :
   else {
     stopped = false;
     cnt = 0;
-    catDirection = 'south';
+    catDirection = map.player.originDirection;
 
     console.log("Game running");
     // console.log(app.renderer.width);
@@ -125,7 +128,7 @@ function moveForward() {
 }
 
 function isOnMap(x, y) {
-  return stage.children.filter((tile, i) => JSON.stringify(tile.infos) === JSON.stringify({id: i, x: x, y: y})).length;
+  return stage.children.filter((tile, i) => JSON.stringify(tile.infos) === JSON.stringify({id: (i+1), x: x, y: y})).length;
 }
 
 function turnLeft() {

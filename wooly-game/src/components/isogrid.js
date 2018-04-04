@@ -1,4 +1,7 @@
 const MapTile = require('./maptile');
+const map = require('../assets/maps/map01');
+const _ = require('lodash');
+
 
 class IsoGrid {
 
@@ -12,14 +15,15 @@ class IsoGrid {
   }
 
   draw() {
-    let floorTexture = PIXI.Texture.fromImage('./src/assets/images/' + this.textures.floor + '.png');
+    let floorTexture = undefined;
     let cnt = 0;
     let tilesLine = 1;
     let x = 336;
     let initialX = x;
     let y = 96;
-    let tileId = 0;
+    let tileId = 1;
 
+    // Dessine la partie supérieure de la map
     while (tilesLine <= 9) {
       for (cnt = 0; cnt < tilesLine; cnt++) {
         let infos = {
@@ -27,7 +31,12 @@ class IsoGrid {
           x: x,
           y: y
         };
-        let floor = new MapTile(floorTexture, tileId, x, y, infos);
+
+        let floor = undefined;
+
+        floorTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].firstLayer + '.png');
+        floor = new MapTile(floorTexture, tileId, x, y, infos);
+
         this.container.addChild(floor);
         x += 64;
         tileId++;
@@ -41,6 +50,7 @@ class IsoGrid {
 
     tilesLine--;
 
+    // Dessine la partie inférieure de la map
     while (tilesLine >= 1) {
       for (cnt = 0; cnt < tilesLine; cnt++) {
         let infos = {
@@ -48,7 +58,10 @@ class IsoGrid {
           x: x,
           y: y
         };
-        let floor = new MapTile(floorTexture, tileId, x, y, infos);
+
+        floorTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].firstLayer + '.png');
+        floor = new MapTile(floorTexture, tileId, x, y, infos);
+
         this.container.addChild(floor);
         x += 64;
         tileId++;
@@ -60,7 +73,11 @@ class IsoGrid {
       tilesLine--;
     }
 
-    // console.log(this.container.children[78].infos);
+    console.log(Math.random().toString(36).substr(2, 9));
+    // console.log(map.tiles["1"].firstLayer); // => "grass", "water"...
+    // console.log(this.container.children[5].constructor.name); // => "MapTile"
+    // console.log(this.container.children.filter(child => child.constructor.name === 'MapTile')); // Afficher que les MapTiles
+
   }
 
   getWidth() {

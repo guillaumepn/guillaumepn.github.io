@@ -1,6 +1,9 @@
 const MapTile = require('./maptile');
 const map = require('../assets/maps/map01');
 const _ = require('lodash');
+const onHover = require('../functions/editor/onHover');
+const onOut = require('../functions/editor/onOut');
+const onClick = require('../functions/editor/onClick');
 
 
 class IsoGrid {
@@ -29,13 +32,21 @@ class IsoGrid {
         let infos = {
           id: tileId,
           x: x,
-          y: y
+          y: y,
+          tile: map.tiles[tileId].firstLayer,
+          object: map.tiles[tileId].secondLayer
         };
 
         let floor = undefined;
 
         floorTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].firstLayer + '.png');
         floor = new MapTile(floorTexture, tileId, x, y, infos);
+        floor.interactive = true;
+        floor.hitArea = new PIXI.Polygon(new PIXI.Point(-32, 0), new PIXI.Point(0, -16), new PIXI.Point(32, 0), new PIXI.Point(0, 16));
+        floor
+          .on('pointerover', onHover)
+          .on('pointerout', onOut)
+          .on('click', onClick);
 
         this.container.addChild(floor);
         x += 64;
@@ -56,11 +67,19 @@ class IsoGrid {
         let infos = {
           id: tileId,
           x: x,
-          y: y
+          y: y,
+          tile: map.tiles[tileId].firstLayer,
+          object: map.tiles[tileId].secondLayer
         };
 
         floorTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].firstLayer + '.png');
         floor = new MapTile(floorTexture, tileId, x, y, infos);
+        floor.interactive = true;
+        floor.hitArea = new PIXI.Polygon(new PIXI.Point(-32, 0), new PIXI.Point(0, -16), new PIXI.Point(32, 0), new PIXI.Point(0, 16));
+        floor
+          .on('pointerover', onHover)
+          .on('pointerout', onOut)
+          .on('click', onClick);
 
         this.container.addChild(floor);
         x += 64;

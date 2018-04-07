@@ -47,6 +47,7 @@ function readSteps() {
   gameInstance = undefined;
 
   if (isOnMap(cat.x, cat.y) === 0) {
+    console.log("test");
     stopGame();
   }
 
@@ -128,7 +129,7 @@ function moveForward() {
 }
 
 function isOnMap(x, y) {
-  return stage.children.filter((tile, i) => JSON.stringify(tile.infos) === JSON.stringify({id: (i+1), x: x, y: y})).length;
+  return stage.children.filter((tile, i) => JSON.stringify(tile.location) === JSON.stringify({id: (i+1), x: x, y: y})).length;
 }
 
 function turnLeft() {

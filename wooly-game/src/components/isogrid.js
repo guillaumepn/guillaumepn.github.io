@@ -29,6 +29,12 @@ class IsoGrid {
     // Dessine la partie supérieure de la map
     while (tilesLine <= 9) {
       for (cnt = 0; cnt < tilesLine; cnt++) {
+        let location = {
+          id: tileId,
+          x: x,
+          y: y
+        };
+
         let infos = {
           id: tileId,
           x: x,
@@ -40,7 +46,7 @@ class IsoGrid {
         let floor = undefined;
 
         floorTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].firstLayer + '.png');
-        floor = new MapTile(floorTexture, tileId, x, y, infos);
+        floor = new MapTile(floorTexture, tileId, x, y, location, infos);
         floor.interactive = true;
         floor.hitArea = new PIXI.Polygon(new PIXI.Point(-32, 0), new PIXI.Point(0, -16), new PIXI.Point(32, 0), new PIXI.Point(0, 16));
         floor
@@ -64,6 +70,12 @@ class IsoGrid {
     // Dessine la partie inférieure de la map
     while (tilesLine >= 1) {
       for (cnt = 0; cnt < tilesLine; cnt++) {
+        let location = {
+          id: tileId,
+          x: x,
+          y: y
+        };
+
         let infos = {
           id: tileId,
           x: x,
@@ -73,7 +85,7 @@ class IsoGrid {
         };
 
         floorTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].firstLayer + '.png');
-        floor = new MapTile(floorTexture, tileId, x, y, infos);
+        floor = new MapTile(floorTexture, tileId, x, y, location, infos);
         floor.interactive = true;
         floor.hitArea = new PIXI.Polygon(new PIXI.Point(-32, 0), new PIXI.Point(0, -16), new PIXI.Point(32, 0), new PIXI.Point(0, 16));
         floor

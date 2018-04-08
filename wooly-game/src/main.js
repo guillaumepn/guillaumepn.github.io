@@ -23,6 +23,7 @@ let logs = [];
 const Grid = require('./components/grid');
 const IsoGrid = require('./components/isogrid');
 const Step = require('./components/step');
+const Trigger = require('./components/trigger');
 const Sprite = require('./components/sprite');
 
 // Map du niveau (JSON)
@@ -76,6 +77,7 @@ PIXI.loader
   .add("play", "./src/assets/images/play.png")
   .add("pause", "./src/assets/images/pause.png")
   .add("tooltip", "./src/assets/images/tooltip.png")
+  .add("trigger-block-if", "./src/assets/images/trigger-block-if.png")
   .load(setup);
 
 
@@ -99,32 +101,52 @@ let cat = PIXI.Sprite.fromImage('./src/assets/images/a-cat.svg');
  */
 // Barre des actions possibles (dans le menu en bas)
 let actions = new PIXI.Container();
+let triggerActions = new PIXI.Container();
 menu.addChild(actions);
+menu.addChild(triggerActions);
 
+// Actions
 let forward;
 let turnleft;
 let turnright;
 let wait;
+// Déclencheurs
+let ifTrigger;
+let whileTrigger;
 
 // Barre des steps que le chat fera (dans le menu en haut)
 let stepsArea = new PIXI.Container();
 let steps = new PIXI.Container();
+let triggers = new PIXI.Container();
 let stepsObject = [];
+let triggersObject = [];
+const triggerTextureTop = PIXI.Texture.fromImage('./src/assets/images/trigger-top.png');
+const triggerTextureBottom = PIXI.Texture.fromImage('./src/assets/images/trigger-bottom.png');
+
 stepsArea.addChild(steps);
+stepsArea.addChild(triggers);
 
 menu.addChild(stepsArea);
 // On crée 10 steps vides, 5 sur chaque ligne...
 for (let y = 0; y < 2; y++) {
   for (let x = 0; x < 5; x++) {
-    let step = new Step(x * 32, y * 32, 31, 31, 'empty', steps);
+    let step = new Step(x * 32, (y * 32) + 48, 32, 32, 'empty', steps);
+    let trigger = undefined;
+    if (y === 0)
+      trigger = new Trigger(x * 32, y, 'empty', triggers, triggerTextureTop);
+    else
+      trigger = new Trigger(x * 32, (y * 32) + 80, 'empty', triggers, triggerTextureBottom);
     step.draw();
     stepsObject.push(step);
+    triggersObject.push(trigger);
   }
 }
 
 // ... puis on supprime la dernière, pour mettre le bouton PLAY à la place après
 steps.children.pop();
+triggers.children.pop();
 stepsObject.pop();
+triggersObject.pop();
 
 menu.setChildIndex(stepsArea, 0);
 
@@ -160,11 +182,11 @@ function setup() {
 
   // On positionne les steps en haut et centré dans le menu
   stepsArea.x = (stepsArea.parent.width / 2) - (stepsArea.width / 2);
-  stepsArea.y = 128;
+  stepsArea.y = 60;
   // et le bouton Play en bas à gauche des steps
-  let play = new Sprite('play', 'play', 128, 32);
+  let play = new Sprite('play', 'play', 128, 80);
   play.x = 128;
-  play.y = 32;
+  play.y = 80;
   play.interactive = true;
   play.buttonMode = true;
   stepsArea.addChild(play);
@@ -202,11 +224,26 @@ function setup() {
 
   actions.addChild(forward, turnleft, turnright, wait);
 
-  // On positionne notre barre d'actions en bas et centré dans le menu
+  // Icones de déclencheurs
+  ifTrigger = new Sprite('trigger-block-if', 'trigger-block-if');
+  ifTrigger.x = 0;
+  ifTrigger.type = 'trigger';
+  ifTrigger.hasTooltip = true;
+  ifTrigger.tooltip = 'Exécute l\'action liée si la condition est vraie';
+  tooltips.addChild(ifTrigger.tooltip);
+
+  triggerActions.addChild(ifTrigger);
+
+  // On positionne notre barre d'actions en bas et centré dans le menu,
+  // et la barre des déclencheurs
+  console.log(actions);
   actions.x = (actions.parent.width / 2) - (actions.width / 2);
   actions.y = actions.parent.height - 192;
 
-  // // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
+  triggerActions.x = (triggerActions.parent.width / 2) - (triggerActions.width / 2);
+  triggerActions.y = triggerActions.parent.height - 160;
+
+  // // Pour chacun des boutons d'action et déclencheurs, on les rend interactif pour pouvoir les cliquer,
   // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
   checkActions();
 
@@ -284,6 +321,19 @@ function checkActions() {
       .on('pointerupoutside', onDragEnd)
       .on('pointermove', onDragMove);
   }
+
+  for (let trigger of triggerActions.children) {
+    trigger.interactive = true;
+    trigger.buttonMode = true;
+    trigger.anchor.set(0.5, 0.5);
+    trigger
+      .on('pointerover', onHover)
+      .on('pointerout', onOut)
+      .on('pointerdown', onDragStart)
+      .on('pointerup', onDragEnd)
+      .on('pointerupoutside', onDragEnd)
+      .on('pointermove', onDragMove);
+  }
 }
 
 
@@ -306,10 +356,13 @@ module.exports = {
   grid,
   stage,
   actions,
+  triggerActions,
   menu,
   stepsArea,
   steps,
+  triggers,
   stepsObject,
+  triggersObject,
   tooltips,
   cat,
   gameInstance,

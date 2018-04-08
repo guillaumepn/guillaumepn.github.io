@@ -2,6 +2,7 @@ const Sprite = require('../components/sprite');
 
 let main = require('../main');
 let actions = main.actions;
+let triggerActions = main.triggerActions;
 let tooltips = main.tooltips;
 let checkActions = main.checkActions;
 
@@ -10,7 +11,13 @@ module.exports = function onDragStart(event) {
   // pour qu'on puisse en ajouter autant qu'on veut
   let duplicate = new Sprite(this.name, this.name, this.originX, this.originY);
   duplicate.x = this.originX;
-  actions.addChild(duplicate);
+
+  // Si c'est une action
+  if (this.type === 'action')
+    actions.addChild(duplicate);
+  // Sinon, un déclencheur
+  else
+    triggerActions.addChild(duplicate);
   duplicate.interactive = true;
   duplicate.buttonMode = true;
   duplicate.anchor.set(0.5, 0.5);

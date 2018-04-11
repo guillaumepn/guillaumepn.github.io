@@ -181,6 +181,7 @@ PIXI.loader
     // Appelle les données JSON du joueur dans le fichier assets/maps/**.json
     let tiles = stage.children.filter(child => child.constructor.name === 'MapTile');
     console.log(tiles);
+    console.log(stage.children);
     console.log(map.player.originTileId);
     console.log(resources["map"].data.player);
     console.log(resources["map"].data.player.originTileId);

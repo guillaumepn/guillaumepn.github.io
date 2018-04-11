@@ -1,5 +1,5 @@
 module.exports = function onOut() {
-  this.alpha = 1;
+  this.tint = 0xffffff;
   if (this.hasTooltip) {
     this.tooltip.hide();
   }

@@ -82,12 +82,24 @@ PIXI.loader
   .add("trigger-top", "./src/assets/images/trigger-top.png")
   .add("trigger-bottom", "./src/assets/images/trigger-bottom.png")
   .add("trigger-block-if", "./src/assets/images/trigger-block-if.png")
+  .add("catanim1", "./src/assets/images/catanim1.png")
+  .add("catanim2", "./src/assets/images/catanim2.png")
+  .add("catanim3", "./src/assets/images/catanim3.png")
+  .add("catanim4", "./src/assets/images/catanim4.png")
   .load((loader, resources) => {
 
 // function setup() {
     /**
      * setup: au chargement de la page / du niveau
      */
+    let catframes = [];
+
+    for (let i = 1; i < 5; i++) {
+      catframes.push(PIXI.Texture.fromFrame('./src/assets/images/catanim'+ i +'.png'));
+    }
+
+    let cat = new PIXI.extras.AnimatedSprite(catframes);
+    cat.animationSpeed = 0.1;
 
     /**
      * La map
@@ -101,7 +113,7 @@ PIXI.loader
 
     let grid = new IsoGrid(10, 14, 64, 32, stage, textures);
 
-    let cat = PIXI.Sprite.fromImage('./src/assets/images/a-cat.svg');
+    // let cat = PIXI.Sprite.fromImage('./src/assets/images/a-cat.svg');
 
 
     /**

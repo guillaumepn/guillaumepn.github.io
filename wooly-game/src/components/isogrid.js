@@ -62,6 +62,8 @@ class IsoGrid {
 
           objetTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].secondLayer + '.png');
           objet = new MapObject(objetTexture, tileId, x, y, location, infos);
+          objet.alpha = 0.9;
+
           this.container.addChild(objet);
         }
 
@@ -110,6 +112,8 @@ class IsoGrid {
 
           objetTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].secondLayer + '.png');
           objet = new MapObject(objetTexture, tileId, x, y, location, infos);
+          objet.alpha = 0.9;
+
           this.container.addChild(objet);
         }
 

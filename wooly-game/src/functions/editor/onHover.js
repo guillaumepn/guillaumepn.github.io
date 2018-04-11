@@ -1,5 +1,5 @@
 module.exports = function () {
-  this.alpha = 0.8;
+  this.tint = 0xfad390;
   if (this.hasTooltip) {
     this.tooltip.show();
   }

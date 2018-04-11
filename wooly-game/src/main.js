@@ -184,6 +184,8 @@ PIXI.loader
     let tiles = stage.children.filter(child => child.constructor.name === 'MapTile');
     cat.x = tiles[map.player.originTileId].infos.x;
     cat.y = tiles[map.player.originTileId].infos.y;
+    console.log(tiles);
+    console.log(map.player.originTileId);
 
     // On ajoute notre chat à notre niveau
     stage.addChild(cat);

@@ -86,9 +86,11 @@ PIXI.loader
   .add("catanim2", "./src/assets/images/catanim2.png")
   .add("catanim3", "./src/assets/images/catanim3.png")
   .add("catanim4", "./src/assets/images/catanim4.png")
+  .add("map", "./src/assets/maps/map01.json")
   .load((loader, resources) => {
 
-// function setup() {
+    // console.log(resources["map"].data.player);
+
     /**
      * setup: au chargement de la page / du niveau
      */
@@ -182,8 +184,8 @@ PIXI.loader
     cat.anchor.set(0.5, 1);
     // Appelle les données JSON du joueur dans le fichier assets/maps/**.json
     let tiles = stage.children.filter(child => child.constructor.name === 'MapTile');
-    cat.x = tiles[map.player.originTileId].infos.x;
-    cat.y = tiles[map.player.originTileId].infos.y;
+    cat.x = tiles[resources["map"].data.player.originTileId].infos.x;
+    cat.y = tiles[resources["map"].data.player.originTileId].infos.y;
     console.log(tiles);
     console.log(map.player.originTileId);
 

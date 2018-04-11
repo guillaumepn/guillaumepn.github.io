@@ -4,7 +4,7 @@
 let main = require('../main');
 let grid = main.grid;
 let stage = main.stage;
-let tiles = stage.children.filter(child => child.constructor.name === 'MapTile');
+let tiles = stage.children.filter(child => child.type === 'MapTile');
 let app = main.app;
 let steps = main.steps;
 let stepsObject = main.stepsObject;
@@ -21,7 +21,6 @@ let catDirection = map.player.originDirection;
 let stopped = false;
 
 module.exports = function runGame(action = 'run') {
-  console.log(tiles[0].infos.x);
   // Bouton Stop a été cliqué :
   if (action === 'stop') {
     stopGame();

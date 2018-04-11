@@ -180,11 +180,6 @@ PIXI.loader
     cat.anchor.set(0.5, 1);
     // Appelle les données JSON du joueur dans le fichier assets/maps/**.json
     let tiles = stage.children.filter(child => child.type === 'MapTile');
-    console.log(tiles);
-    console.log(stage.children);
-    console.log(map.player.originTileId);
-    console.log(resources["map"].data.player);
-    console.log(resources["map"].data.player.originTileId);
     cat.x = tiles[resources["map"].data.player.originTileId].infos.x;
     cat.y = tiles[resources["map"].data.player.originTileId].infos.y;
 

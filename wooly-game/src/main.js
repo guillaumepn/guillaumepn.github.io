@@ -91,15 +91,13 @@ PIXI.loader
 
     // console.log(resources["map"].data.player);
 
-    /**
-     * setup: au chargement de la page / du niveau
-     */
     let catframes = [];
 
     for (let i = 1; i < 5; i++) {
       catframes.push(PIXI.Texture.fromFrame('./src/assets/images/catanim'+ i +'.png'));
     }
 
+    console.log(catframes);
     let cat = new PIXI.extras.AnimatedSprite(catframes);
     cat.animationSpeed = 0.1;
 
@@ -114,8 +112,6 @@ PIXI.loader
     };
 
     let grid = new IsoGrid(10, 14, 64, 32, stage, textures);
-
-    // let cat = PIXI.Sprite.fromImage('./src/assets/images/a-cat.svg');
 
 
     /**

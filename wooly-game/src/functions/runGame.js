@@ -4,6 +4,7 @@
 let main = require('../main');
 let grid = main.grid;
 let stage = main.stage;
+let tiles = stage.children.filter(child => child.constructor.name === 'MapTile');
 let app = main.app;
 let steps = main.steps;
 let stepsObject = main.stepsObject;
@@ -22,8 +23,9 @@ module.exports = function runGame(action = 'run') {
   // Bouton Stop a été cliqué :
   if (action === 'stop') {
     stopGame();
-    cat.x = stage.children[map.player.originTileId].infos.x;
-    cat.y = stage.children[map.player.originTileId].infos.y;
+
+    cat.x = tiles[map.player.originTileId].infos.x;
+    cat.y = tiles[map.player.originTileId].infos.y;
     catDirection = map.player.originDirection;
   }
   // Bouton Play a été cliqué :
@@ -129,7 +131,7 @@ function moveForward() {
 }
 
 function isOnMap(x, y) {
-  return stage.children.filter((tile, i) => JSON.stringify(tile.location) === JSON.stringify({id: (i+1), x: x, y: y})).length;
+  return tiles.filter((tile, i) => JSON.stringify(tile.location) === JSON.stringify({id: (i+1), x: x, y: y})).length;
 }
 
 function turnLeft() {

@@ -2,6 +2,7 @@ class Tooltip extends PIXI.Sprite {
 
   constructor(texture = null, name = '', text = '', originX = 32, originY = 0) {
     super(PIXI.loader.resources[texture].texture);
+
     this.alpha = 0;
     this._name = name;
     this._originX = originX;
@@ -14,13 +15,13 @@ class Tooltip extends PIXI.Sprite {
     this._text.style.fill = '0xffffff';
     this._text.style.fontSize = 14;
     this._text.style.wordWrap = true;
-    this._text.style.wordWrapWidth = this.width - 16;
+    this._text.style.wordWrapWidth = this.texture.width - 16;
     this.addChild(this._text);
     this._text = text;
   }
 
-  changeSprite(sprite) {
-    this.texture = PIXI.Texture.from(sprite);
+  changeSprite(texture) {
+    this.texture = texture;
   }
 
   show() {

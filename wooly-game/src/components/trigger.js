@@ -1,7 +1,7 @@
 class Trigger extends PIXI.Sprite {
 
   constructor(originX, originY, type, container, texture) {
-    super();
+    super(PIXI.loader.resources[texture].texture);
 
     this._originX = originX;
     this._originY = originY;
@@ -9,7 +9,6 @@ class Trigger extends PIXI.Sprite {
     this.y = originY;
     this._type = type;
     this._container = container;
-    this._texture = texture;
 
     this._container.addChild(this);
   }
@@ -47,14 +46,6 @@ class Trigger extends PIXI.Sprite {
 
   set container(value) {
     this._container = value;
-  }
-
-  get texture() {
-    return this._texture;
-  }
-
-  set texture(value) {
-    this._texture = value;
   }
 
 }

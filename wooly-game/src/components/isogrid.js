@@ -1,6 +1,6 @@
 const MapTile = require('./maptile');
+const MapObject = require('./mapobject');
 const map = require('../assets/maps/map01');
-const _ = require('lodash');
 const onHover = require('../functions/editor/onHover');
 const onOut = require('../functions/editor/onOut');
 const onClick = require('../functions/editor/onClick');
@@ -19,6 +19,7 @@ class IsoGrid {
 
   draw() {
     let floorTexture = undefined;
+    let objetTexture = undefined;
     let cnt = 0;
     let tilesLine = 1;
     let x = 336;
@@ -55,6 +56,15 @@ class IsoGrid {
           .on('click', onClick);
 
         this.container.addChild(floor);
+
+        if (map.tiles[tileId].secondLayer !== null) {
+          let objet = undefined;
+
+          objetTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].secondLayer + '.png');
+          objet = new MapObject(objetTexture, tileId, x, y, location, infos);
+          this.container.addChild(objet);
+        }
+
         x += 64;
         tileId++;
       }
@@ -94,6 +104,15 @@ class IsoGrid {
           .on('click', onClick);
 
         this.container.addChild(floor);
+
+        if (map.tiles[tileId].secondLayer !== null) {
+          let objet = undefined;
+
+          objetTexture = PIXI.Texture.fromImage('./src/assets/images/' + map.tiles[tileId].secondLayer + '.png');
+          objet = new MapObject(objetTexture, tileId, x, y, location, infos);
+          this.container.addChild(objet);
+        }
+
         x += 64;
         tileId++;
       }
@@ -104,7 +123,6 @@ class IsoGrid {
       tilesLine--;
     }
 
-    console.log(Math.random().toString(36).substr(2, 9));
     // console.log(map.tiles["1"].firstLayer); // => "grass", "water"...
     // console.log(this.container.children[5].constructor.name); // => "MapTile"
     // console.log(this.container.children.filter(child => child.constructor.name === 'MapTile')); // Afficher que les MapTiles

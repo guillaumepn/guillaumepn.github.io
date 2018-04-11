@@ -4,6 +4,7 @@ class Sprite extends PIXI.Sprite {
 
   constructor(texture = null, name = '', originX = 0, originY = 0, onStep = false, currentStep = null, hasTooltip = false, tooltip = '', type = 'action') {
     super(PIXI.loader.resources[texture].texture);
+
     this._name = name;
     this._originX = originX;
     this._originY = originY;
@@ -15,8 +16,8 @@ class Sprite extends PIXI.Sprite {
     this._type = type;
   }
 
-  changeSprite(sprite) {
-    this.texture = PIXI.Texture.from(sprite);
+  changeSprite(texture) {
+    this.texture = PIXI.loader.resources[texture].texture;
   }
 
   get name() {

@@ -13,11 +13,14 @@ module.exports = function onDragStart(event) {
   duplicate.x = this.originX;
 
   // Si c'est une action
-  if (this.type === 'action')
+  if (this.type === 'action') {
     actions.addChild(duplicate);
+  }
   // Sinon, un déclencheur
-  else
+  else {
     triggerActions.addChild(duplicate);
+  }
+
   duplicate.interactive = true;
   duplicate.buttonMode = true;
   duplicate.anchor.set(0.5, 0.5);

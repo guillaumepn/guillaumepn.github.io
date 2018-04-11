@@ -32,7 +32,7 @@
     },
     "7": {
       "firstLayer": "grass",
-      "secondLayer": null
+      "secondLayer": "wall"
     },
     "8": {
       "firstLayer": "grass",
@@ -52,7 +52,7 @@
     },
     "12": {
       "firstLayer": "grass",
-      "secondLayer": null
+      "secondLayer": "wall"
     },
     "13": {
       "firstLayer": "grass",
@@ -220,7 +220,7 @@
     },
     "54": {
       "firstLayer": "grass",
-      "secondLayer": null
+      "secondLayer": "wall"
     },
     "55": {
       "firstLayer": "grass",
@@ -297,11 +297,11 @@
     },
     "73": {
       "firstLayer": "grass",
-      "secondLayer": null
+      "secondLayer": "wall"
     },
     "74": {
       "firstLayer": "grass",
-      "secondLayer": null
+      "secondLayer": "wall"
     },
     "75": {
       "firstLayer": "water",

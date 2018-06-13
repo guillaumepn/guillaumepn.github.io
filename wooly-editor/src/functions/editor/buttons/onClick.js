@@ -1,24 +1,34 @@
+// Cet event click concerne le clic sur les boutons dans l'interface de l'éditeur
+
 module.exports = function () {
   let main = require('../../../main');
   let map = main.map;
   let grid = main.grid;
+  let tileButtons = main.tileEditorArea;
+  let objectButtons = main.objectEditorArea;
 
-  switch (this.name) {
-    case 'editor-grass':
-      map.tiles[this.editorId].firstLayer.texture = 'grass';
-      // grid.container.children[this.editorId].changeTexture('grass');
-      grid.container.children[this.editorId].texture = PIXI.loader.resources['grass'].texture;
-      break;
+  let textureName = this.name.replace('editor-', '');
 
-    case 'editor-water':
-      map.tiles[this.editorId].firstLayer.texture = 'water';
-      console.log(grid.container.children[this.editorId]);
-      // grid.container.children[this.editorId].changeTexture('water');
-      grid.container.children[this.editorId].texture = PIXI.loader.resources['water'].texture;
-      break;
-    default: break;
+  tileButtons.children.filter(tile => {
+    if (tile.name !== this.name) {
+      tile.highlight = false;
+      tile.changeSprite(tile.name);
+    }
+  });
+
+  objectButtons.children.filter(object => {
+    if (object.name !== this.name) {
+      object.highlight = false;
+      object.changeSprite(object.name);
+    }
+  });
+
+  this.highlight = !this.highlight;
+
+  if (this.highlight) {
+    this.changeSprite('editor-' + textureName + '-focus');
+  } else {
+    this.changeSprite('editor-' + textureName);
   }
 
-  console.log(grid);
-  console.log(this.editorId);
 };

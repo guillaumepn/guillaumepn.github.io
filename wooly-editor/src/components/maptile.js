@@ -1,6 +1,6 @@
 class MapTile extends PIXI.Sprite {
 
-  constructor(texture = null, id = '', originX = 0, originY = 0, location, infos, type = 'MapTile', highlight = false, object = null) {
+  constructor(texture = null, id = '', originX = 0, originY = 0, location, infos, type = 'MapTile', highlight = false, object = null, priority = 1) {
     super(PIXI.loader.resources[texture].texture);
     this.anchor.set(0.5, 0.5);
     this.x = originX;
@@ -13,6 +13,7 @@ class MapTile extends PIXI.Sprite {
     this._type = type;
     this._highlight = highlight;
     this._object = object;
+    this._priority = priority;
   }
 
   changeSprite(texture) {
@@ -88,6 +89,14 @@ class MapTile extends PIXI.Sprite {
 
   set object(value) {
     this._object = value;
+  }
+
+  get priority() {
+    return this._priority;
+  }
+
+  set priority(value) {
+    this._priority = value;
   }
 }
 

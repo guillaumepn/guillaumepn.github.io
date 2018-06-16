@@ -24,6 +24,7 @@ const IsoGrid = require('./components/isogrid');
 const Step = require('./components/step');
 const Trigger = require('./components/trigger');
 const Sprite = require('./components/sprite');
+const Cat = require('./components/cat');
 
 // Functions
 
@@ -41,7 +42,8 @@ let app = new PIXI.Application({
   width: 960,
   height: 480,
   resolution: 1,
-  transparent: true
+  transparent: true,
+  roundPixels: true
 });
 
 // Ajouter le <canvas> du jeu dans la <div id='app'>
@@ -52,19 +54,18 @@ let container = new PIXI.Container();
 
 // Création du container du niveau
 let stage = new PIXI.Graphics();
-// stage.beginFill(0xb8e994);
 stage.beginFill(0xffffff);
 stage.drawRect(0, 0, 640, (app.renderer.height - 32));
 
 // Création du container du menu de jeu
 let menu = new PIXI.Graphics();
-menu.beginFill(0xfad390);
+menu.beginFill(0xffffff);
 menu.drawRect(0, 0, 320, (app.renderer.height - 32));
 menu.position.set(640, 0);
 
 // Création du container du menu de l'éditeur
 let editor = new PIXI.Graphics();
-editor.beginFill(0xffedce);
+editor.beginFill(0xffffff);
 editor.drawRect(0, 0, 320, (app.renderer.height - 32));
 editor.position.set(640, 0);
 
@@ -97,6 +98,8 @@ PIXI.loader
   .add("catanim2", "./src/assets/images/catanim2.png")
   .add("catanim3", "./src/assets/images/catanim3.png")
   .add("catanim4", "./src/assets/images/catanim4.png")
+  //  Wool ball
+  .add("wool", "./src/assets/images/wool.png")
   // JSON map data
   .add("map", "./src/assets/maps/map01.json")
   // Map textures (tiles & objets)
@@ -133,7 +136,16 @@ PIXI.loader
   .add("editor-wall-focus", "./src/assets/images/editor-wall-focus.png")
   .add("editor-eraser", "./src/assets/images/editor-eraser.png")
   .add("editor-eraser-focus", "./src/assets/images/editor-eraser-focus.png")
+  // // Editor UI buttons
+  .add("editor-start", "./src/assets/images/editor-start.png")
+  .add("editor-start-focus", "./src/assets/images/editor-start-focus.png")
+  .add("editor-goal", "./src/assets/images/editor-goal.png")
+  .add("editor-goal-focus", "./src/assets/images/editor-goal-focus.png")
+  .add("editor-test", "./src/assets/images/editor-test.png")
+  .add("editor-back", "./src/assets/images/editor-back.png")
   .load((loader, resources) => {
+
+    /* here : connect to db to get level */
 
     const onHover = require('./functions/onHover');
     const onOut = require('./functions/onOut');
@@ -146,13 +158,14 @@ PIXI.loader
       catframes.push(PIXI.Texture.fromFrame('./src/assets/images/catanim'+ i +'.png'));
     }
 
-    let cat = new PIXI.extras.AnimatedSprite(catframes);
-    cat.animationSpeed = 0.1;
+    // let cat = new PIXI.extras.AnimatedSprite(catframes);
+    // cat.animationSpeed = 0.1;
+    let cat = new Cat(catframes, 0.1);
 
     /**
      * La map
      */
-// Dessine la grille sur la map (voir ./components/grid.js)
+    // Dessine la grille sur la map (voir ./components/grid.js)
 
     let grid = new IsoGrid(10, 14, 64, 32, stage);
 
@@ -168,34 +181,40 @@ PIXI.loader
     objectEditorArea.name = 'object-editor';
     objectEditorArea.x = 32;
     objectEditorArea.y = 96;
+    let uiEditorArea = new PIXI.Container();
+    uiEditorArea.name = 'ui-editor';
+    uiEditorArea.x = 32;
+    uiEditorArea.y = 160;
     editor.addChild(tileEditorArea);
     editor.addChild(objectEditorArea);
+    editor.addChild(uiEditorArea);
 
     /**
      * Le menu
      */
-// Barre des actions possibles (dans le menu en bas)
+    // Barre des actions possibles (dans le menu en bas)
     let actions = new PIXI.Container();
     let triggerActions = new PIXI.Container();
     menu.addChild(actions);
     menu.addChild(triggerActions);
 
-// Actions
+    // Actions
     let forward;
     let turnleft;
     let turnright;
-    let wait;
-// Déclencheurs
+    // let wait;
+    // Déclencheurs
     let ifTrigger;
     let whileTrigger;
     let untilTrigger;
 
-// Zone des tooltips
+    // Zone des tooltips
     let tooltips = new PIXI.Container();
-    menu.addChild(tooltips);
+    let gameTooltips = new PIXI.Container();
     editor.addChild(tooltips);
+    menu.addChild(gameTooltips);
 
-// Barre des steps que le chat fera (dans le menu en haut)
+    // Barre des steps que le chat fera (dans le menu en haut)
     let stepsArea = new PIXI.Container();
     let steps = new PIXI.Container();
     let triggers = new PIXI.Container();
@@ -206,7 +225,7 @@ PIXI.loader
     stepsArea.addChild(triggers);
 
     menu.addChild(stepsArea);
-// On crée 10 steps vides, 5 sur chaque ligne...
+    // On crée 10 steps vides, 5 sur chaque ligne...
     for (let y = 0; y < 2; y++) {
       for (let x = 0; x < 5; x++) {
         let step = new Step(x * 32, (y * 32) + 48, 32, 32, 'empty', steps);
@@ -216,7 +235,7 @@ PIXI.loader
         else
           trigger = new Trigger(x * 32, (y * 32) + 80, 'empty', triggers, 'trigger-bottom');
         trigger.tooltip = "Rien pour l'instant";
-        tooltips.addChild(trigger.tooltip);
+        gameTooltips.addChild(trigger.tooltip);
 
         step.draw();
 
@@ -225,7 +244,7 @@ PIXI.loader
       }
     }
 
-// ... puis on supprime la dernière, pour mettre le bouton PLAY à la place après
+    // ... puis on supprime la dernière, pour mettre le bouton PLAY à la place après
     steps.children.pop();
     triggers.children.pop();
     stepsObject.pop();
@@ -247,8 +266,15 @@ PIXI.loader
     cat.x = tiles[resources["map"].data.player.originTileId].infos.x;
     cat.y = tiles[resources["map"].data.player.originTileId].infos.y;
 
+    // La pelote de laine
+    let wool = new Sprite('wool', 'wool');
+    wool.anchor.set(0.5, 0.75);
+    wool.x = tiles[resources["map"].data.player.goalTileId].infos.x;
+    wool.y = tiles[resources["map"].data.player.goalTileId].infos.y;
+
     // On ajoute notre chat à notre niveau
     stage.addChild(cat);
+    stage.addChild(wool);
 
     /**
      * GAME CODE
@@ -256,7 +282,7 @@ PIXI.loader
 
     // On positionne les steps en haut et centré dans le menu
     stepsArea.x = (stepsArea.parent.width / 2) - (stepsArea.width / 2);
-    stepsArea.y = 60;
+    stepsArea.y = 36;
 
 
     // et le bouton Play en bas à gauche des steps
@@ -271,34 +297,34 @@ PIXI.loader
       .on('pointerout', onOut);
     play.hasTooltip = true;
     play.tooltip = 'Exécute la série des actions en boucle';
-    tooltips.addChild(play.tooltip);
+    gameTooltips.addChild(play.tooltip);
 
     // Icones d'action
     forward = new Sprite('forward', 'forward');
     forward.x = 0;
     forward.hasTooltip = true;
     forward.tooltip = 'Fait avancer le chat d\'une case dans sa direction actuelle';
-    tooltips.addChild(forward.tooltip);
+    gameTooltips.addChild(forward.tooltip);
 
     turnleft = new Sprite('turnleft', 'turnleft', 32);
     turnleft.x = 32;
     turnleft.hasTooltip = true;
     turnleft.tooltip = 'Change la direction du chat de 90° dans le sens des aiguilles d\'une montre';
-    tooltips.addChild(turnleft.tooltip);
+    gameTooltips.addChild(turnleft.tooltip);
 
     turnright = new Sprite('turnright', 'turnright', 64);
     turnright.x = 64;
     turnright.hasTooltip = true;
     turnright.tooltip = 'Change la direction du chat de 90° dans le sens inverse des aiguilles d\'une montre';
-    tooltips.addChild(turnright.tooltip);
+    gameTooltips.addChild(turnright.tooltip);
 
-    wait = new Sprite('wait', 'wait', 96);
-    wait.x = 96;
-    wait.hasTooltip = true;
-    wait.tooltip = 'Attend (sert à rien pour l\'instant - ptet à virer)';
-    tooltips.addChild(wait.tooltip);
+    // wait = new Sprite('wait', 'wait', 96);
+    // wait.x = 96;
+    // wait.hasTooltip = true;
+    // wait.tooltip = 'Attend (sert à rien pour l\'instant - ptet à virer)';
+    // tooltips.addChild(wait.tooltip);
 
-    actions.addChild(forward, turnleft, turnright, wait);
+    actions.addChild(forward, turnleft, turnright);
 
     // Icones de déclencheurs
     ifTrigger = new Sprite('trigger-block-if', 'trigger-block-if');
@@ -307,7 +333,7 @@ PIXI.loader
     ifTrigger.type = 'trigger';
     ifTrigger.hasTooltip = true;
     ifTrigger.tooltip = '"Si" : Exécute l\'action si la condition est vraie';
-    tooltips.addChild(ifTrigger.tooltip);
+    gameTooltips.addChild(ifTrigger.tooltip);
 
     triggerActions.addChild(ifTrigger);
 
@@ -317,7 +343,7 @@ PIXI.loader
     whileTrigger.type = 'trigger';
     whileTrigger.hasTooltip = true;
     whileTrigger.tooltip = '"Pendant" : Exécute l\'action pendant un certain temps';
-    tooltips.addChild(whileTrigger.tooltip);
+    gameTooltips.addChild(whileTrigger.tooltip);
 
     triggerActions.addChild(whileTrigger);
 
@@ -327,51 +353,34 @@ PIXI.loader
     untilTrigger.type = 'trigger';
     untilTrigger.hasTooltip = true;
     untilTrigger.tooltip = '"Tant que" : Exécute l\'action tant que la condition est vraie';
-    tooltips.addChild(untilTrigger.tooltip);
+    gameTooltips.addChild(untilTrigger.tooltip);
 
     triggerActions.addChild(untilTrigger);
+
+    // Ajout du bouton "Revenir à l'éditeur"
+    let backEditorSprite = new Sprite('editor-back', 'editor-back', 0);
+    backEditorSprite.x = 84;
+    backEditorSprite.originX = 84;
+    backEditorSprite.y = menu.height - 96;
+    backEditorSprite.originY = menu.height - 96;
+    backEditorSprite.type = 'ui';
+    menu.addChild(backEditorSprite);
 
     // On positionne notre barre d'actions en bas et centré dans le menu,
     // et la barre des déclencheurs
     actions.x = (actions.parent.width / 2) - (actions.width / 2);
-    actions.y = actions.parent.height - 160;
+    actions.y = actions.parent.height - 198;
 
     triggerActions.x = (triggerActions.parent.width / 2) - (triggerActions.width / 2);
-    triggerActions.y = triggerActions.parent.height - 128;
+    triggerActions.y = triggerActions.parent.height - 160;
 
     // On positionne la zone où les tooltips s'afficheront
     tooltips.x = 0;
-    tooltips.y = tooltips.parent.height - 96;
-
-
-    let mapText = new PIXI.Text('map');
-    mapText.x = 20;
-    mapText.y = stage.height;
-    stage.addChild(mapText);
-
-    let menuText = new PIXI.Text('menu');
-    menuText.x = 20;
-    menuText.y = menu.height;
-    menu.addChild(menuText);
-
-    let editorText = new PIXI.Text('editor');
-    editorText.x = 20;
-    editorText.y = editor.height;
-    editor.addChild(editorText);
+    tooltips.y = tooltips.parent.height - 64;
+    gameTooltips.x = 0;
+    gameTooltips.y = gameTooltips.parent.height - 64;
 
     menu.visible = false;
-
-    // Toggle menu / editor
-    document.querySelector('.switchMenu').addEventListener('click', function () {
-      menu.visible = !menu.visible;
-      editor.visible = !editor.visible;
-    });
-
-    // Set map id
-    document.querySelector('.uniq').addEventListener('click', function () {
-      map.id = Math.random().toString(36).substr(2, 9);
-      console.log(map.id);
-    });
 
 
     function checkActions() {
@@ -444,6 +453,12 @@ PIXI.loader
       'eraser': 'Gomme :\nEfface un objet sur la carte.',
     };
 
+    let editorUiButtons = {
+      'start': 'Case de départ :\nDéfinit où le chat commencera au début du niveau.',
+      'goal': 'Case de fin :\nDéfinit où le chat devra arriver pour finir le niveau.',
+      'test': 'Tester le niveau :\nPour valider la création de votre niveau, vous devez le tester et le finir vous-même.',
+    };
+
     let index = 0;
 
     for (let texture in editorTileButtons) {
@@ -472,6 +487,21 @@ PIXI.loader
       index++;
     }
 
+    index = 0;
+
+    for (let texture in editorUiButtons) {
+      let textureSprite = new Sprite('editor-'+texture, 'editor-'+texture, 0);
+      textureSprite.x = 0;
+      textureSprite.originX = 0;
+      textureSprite.y = index * 48;
+      textureSprite.originY = index * 48;
+      textureSprite.type = 'ui';
+      textureSprite.hasTooltip = true;
+      textureSprite.tooltip = editorUiButtons[texture];
+      tooltips.addChild(textureSprite.tooltip);
+      uiEditorArea.addChild(textureSprite);
+      index++;
+    }
 
     /* Events pour les boutons de l'éditeur */
 
@@ -503,6 +533,24 @@ PIXI.loader
           .on('click', onClick);
       }
 
+      for (let ui of uiEditorArea.children) {
+        ui.interactive = true;
+        ui.buttonMode = true;
+        ui.anchor.set(0.1, 0.5);
+        ui
+          .on('pointerover', onHover)
+          .on('pointerout', onOut)
+          .on('click', onClick);
+      }
+
+      backEditorSprite.interactive = true;
+      backEditorSprite.buttonMode = true;
+      backEditorSprite.anchor.set(0.1, 0.5);
+      backEditorSprite
+        .on('pointerover', onHover)
+        .on('pointerout', onOut)
+        .on('click', onClick);
+
     }
 
 
@@ -521,9 +569,12 @@ PIXI.loader
       stepsObject,
       triggersObject,
       tooltips,
+      gameTooltips,
       tileEditorArea,
       objectEditorArea,
+      uiEditorArea,
       cat,
+      wool,
       gameInstance
     };
 
@@ -552,6 +603,40 @@ PIXI.loader
     // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
     checkActions();
     checkEditorActions();
+
+
+    // Toggle menu / editor
+    document.querySelector('.switchMenu').addEventListener('click', function () {
+      menu.visible = !menu.visible;
+      editor.visible = !editor.visible;
+    });
+
+    // Set map id
+    document.querySelector('.uniq').addEventListener('click', function () {
+      map.id = Math.random().toString(36).substr(2, 9);
+      console.log(map.id);
+      let renderTexture = PIXI.RenderTexture.create(app.renderer.width, app.renderer.height);
+      app.renderer.render(stage, renderTexture);
+      let canvas = app.renderer.extract.canvas(renderTexture);
+      let img = canvas.toDataURL('image/png');
+      // document.querySelector('img.screenshot').src = img;
+
+      // convert base64 to blob
+      fetch(img)
+        .then(res => res.blob())
+        .then(blob => {
+
+          // convert blob to base64
+          let reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = function() {
+            let base64data = reader.result;
+            document.querySelector('img.screenshot').src = base64data;
+          };
+
+        });
+
+    });
 
 
     // Get JSON from map

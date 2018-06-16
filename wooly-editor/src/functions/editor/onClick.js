@@ -14,17 +14,59 @@ module.exports = function () {
   let editor = main.editor;
   let tileButtons = main.tileEditorArea;
   let objectButtons = main.objectEditorArea;
+  let uiButtons = main.uiEditorArea;
+  let cat = main.cat;
+  let wool = main.wool;
 
-  let selectedButton = tileButtons.children.filter(button => button.highlight)[0];
-  if (!selectedButton) {
-    selectedButton = objectButtons.children.filter(button => button.highlight)[0];
-  }
+  let tileSpecs = {
+    'grass': {
+      'accessible': true,
+      'deadly': false
+    },
+    'water': {
+      'accessible': true,
+      'deadly': true
+    },
+    'sand': {
+      'accessible': true,
+      'deadly': false
+    },
+    'stone': {
+      'accessible': true,
+      'deadly': false
+    },
+    'ice': {
+      'accessible': true,
+      'deadly': false
+    },
+  };
+
+  let objectSpecs = {
+    'tree': {
+      'accessible': false,
+      'deadly': false
+    },
+    'stone1': {
+      'accessible': false,
+      'deadly': false
+    },
+    'wall': {
+      'accessible': false,
+      'deadly': false
+    },
+  };
+
+  let selectedButton = tileButtons.children.filter(button => button.highlight)[0] ||
+    objectButtons.children.filter(button => button.highlight)[0] ||
+    uiButtons.children.filter(button => button.highlight)[0];
 
   if (selectedButton) {
     let textureName = selectedButton.name.replace('editor-', '');
     // For a tile
     if (selectedButton.type === 'tile') {
       map.tiles[this.infos.id].firstLayer.texture = textureName;
+      map.tiles[this.infos.id].firstLayer.accessible = tileSpecs[textureName].accessible;
+      map.tiles[this.infos.id].firstLayer.deadly = tileSpecs[textureName].deadly;
       grid.container.children[this.infos.id].texture = PIXI.loader.resources[textureName].texture;
     }
     // For an object
@@ -43,11 +85,13 @@ module.exports = function () {
         if (!map.tiles[this.infos.id].secondLayer) {
           map.tiles[this.infos.id].secondLayer = {
             texture: textureName,
-            accessible: false,
-            deadly: false
+            accessible: objectSpecs[textureName].accessible,
+            deadly: objectSpecs[textureName].deadly
           };
         } else {
           map.tiles[this.infos.id].secondLayer.texture = textureName;
+          map.tiles[this.infos.id].secondLayer.accessible = objectSpecs[textureName].accessible;
+          map.tiles[this.infos.id].secondLayer.deadly = objectSpecs[textureName].deadly;
         }
 
         // S'il y a déjà un objet à cet endroit, on le remplace
@@ -86,6 +130,28 @@ module.exports = function () {
             grid.container.addChild(object);
           });
         }
+      }
+    }
+    // For a ui button
+    else if (selectedButton.type === 'ui') {
+      console.log(selectedButton, textureName);
+      console.log(cat);
+      // Case de départ
+      if (textureName === 'start' && this.infos.id !== map.player.goalTileId) {
+        map.player.originTileId = this.infos.id;
+        let startTile = grid.container.children[this.infos.id];
+        cat.x = startTile.infos.x;
+        cat.y = startTile.infos.y;
+      }
+      // Case de fin
+      else if (textureName === 'goal' && this.infos.id !== map.player.originTileId) {
+        map.player.goalTileId = this.infos.id;
+        let goalTile = grid.container.children[this.infos.id];
+        wool.x = goalTile.infos.x;
+        wool.y = goalTile.infos.y;
+        console.log(map.player.goalTileId);
+      } else if ((textureName === 'start' && this.infos.id === map.player.goalTileId) || (textureName === 'goal' && this.infos.id === map.player.originTileId)) {
+        alert("Le chat et la pelote ne peuvent pas être sur la même case");
       }
     }
   }

@@ -56,7 +56,7 @@ class IsoGrid {
           let objet = undefined;
 
           objet = new MapObject(map.tiles[tileId].secondLayer.texture, tileId, x, y, location, infos);
-          objet.alpha = 0.7;
+          objet.alpha = 0.9;
           this.container.addChild(objet);
           floor.object = objet;
         }
@@ -104,7 +104,7 @@ class IsoGrid {
           let objet = undefined;
 
           objet = new MapObject(map.tiles[tileId].secondLayer.texture, tileId, x, y, location, infos);
-          objet.alpha = 0.7;
+          objet.alpha = 0.9;
           this.container.addChild(objet);
           floor.object = objet;
         }

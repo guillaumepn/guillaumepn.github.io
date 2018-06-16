@@ -1,5 +1,5 @@
 class MapObject extends PIXI.Sprite {
-  constructor(texture = null, id = '', originX = 0, originY = 0, location, infos, type = 'MapObject') {
+  constructor(texture = null, id = '', originX = 0, originY = 0, location, infos, type = 'MapObject', priority = 2) {
     super(PIXI.loader.resources[texture].texture);
     this.x = originX;
     this.y = originY;
@@ -10,6 +10,7 @@ class MapObject extends PIXI.Sprite {
     this.height = this.texture.height / 10;
     this._type = type;
     this.anchor.set(0.5, 0.75);
+    this._priority = priority;
   }
 
   resetHeight(textureHeight) {
@@ -61,6 +62,14 @@ class MapObject extends PIXI.Sprite {
 
   set type(value) {
     this._type = value;
+  }
+
+  get priority() {
+    return this._priority;
+  }
+
+  set priority(value) {
+    this._priority = value;
   }
 }
 

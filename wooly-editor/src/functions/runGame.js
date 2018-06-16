@@ -15,7 +15,7 @@ let gameInstance = main.gameInstance;
 let animInstance = undefined;
 
 // Données JSON de la map
-const map = require('../assets/maps/map01');
+let map = main.map;
 
 let cnt = 0;
 let triggerWhileCounter = 0;
@@ -262,15 +262,9 @@ function moveForward() {
   cat.play();
 
   if (isDeadly(cat.x, cat.y) > 0) {
-    console.log("creve");
-    // let vid = document.getElementById("myVideo");
-    // vid.style.display = 'block';
     alert("lose");
     stopGame();
 
-    // vid.play();
-
-    // setTimeout(function(){ vid.style.display = 'none'; }, 8000);
     return;
   }
 
@@ -309,14 +303,20 @@ function moveForward() {
     default: break;
   }
 
-  if (isDeadly(cat.x, cat.y) > 0) {
-    console.log("creve")
-    stopGame();
-  }
+  // if (isDeadly(cat.x, cat.y) > 0) {
+  //   stopGame();
+  // }
 
 }
 
 function moveTo(originCatX, originCatY, x, y) {
+  // let catCurrentTile = whatTile(x, y);
+  // console.log(catCurrentTile.id);
+  // console.log(grid.container.children);
+  // let catIdInGrid = grid.container.children.map(child => child.name).indexOf('cat');
+  // console.log(catIdInGrid);
+  // reorderInGrid(grid.container.children, catIdInGrid, (catCurrentTile.id + 1));
+
   let diffX = Math.abs(originCatX - x);
   let diffY = Math.abs(originCatY - y);
   if (cat.x < x) cat.x += (diffX/40);
@@ -327,6 +327,7 @@ function moveTo(originCatX, originCatY, x, y) {
   if (Math.ceil(cat.x) === x && Math.ceil(cat.y) === y) {
     cat.x = Math.ceil(cat.x);
     cat.y = Math.ceil(cat.y);
+
     updateCounter();
     readSteps();
   } else {
@@ -335,7 +336,7 @@ function moveTo(originCatX, originCatY, x, y) {
 }
 
 function whatTile(x, y) {
-  return tiles.filter((tile, i) => (tile.location.x === x && tile.location.y === y))[0];
+  return tiles.filter((tile, i) => (_.inRange(tile.location.x, (x-2), (x+2)) && _.inRange(tile.location.y, (y-2), (y+2))))[0];
 }
 
 function isOnMap(x, y) {
@@ -351,7 +352,8 @@ function isAccessible(x, y) {
 }
 
 function isEndGame(x, y) {
-  return tiles.filter((tile, i) => (tile.infos.x === x && tile.infos.y === y && tile.infos.tile.end === true)).length;
+  let tile = whatTile(x, y);
+  return tile.id === map.player.goalTileId;
 }
 
 function turnLeft() {
@@ -388,6 +390,10 @@ function turnRight() {
       break;
     default: break;
   }
+}
+
+function reorderInGrid(arr, from, to) {
+  arr.splice(to, 0, arr.splice(from, 1)[0]);
 }
 
 function stopGame() {
